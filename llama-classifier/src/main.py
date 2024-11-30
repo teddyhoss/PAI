@@ -1,28 +1,32 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
-from database.connection import get_db
+from database.connection import get_db, Base, engine
 from services.classifier import IssueClassifier
 from pydantic import BaseModel
+from database import models
 
 app = FastAPI()
 classifier = IssueClassifier()
+
+# Crea le tabelle nel database
+Base.metadata.create_all(bind=engine)
 
 class Issue(BaseModel):
     text: str
 
 @app.post("/classify/")
-async def classify_issue(issue: Issue, db: Session = Depends(get_db)):
+def classify_issue(issue: Issue, db: Session = Depends(get_db)):
     # Classifica il problema
-    classification = await classifier.classify_issue(issue.text)
+    classification = classifier.classify_issue(issue.text)
     
-    # Qui puoi aggiungere la logica per salvare nel database
-    # Per esempio:
-    # db_issue = models.Issue(
-    #     text=issue.text,
-    #     classification=classification
-    # )
-    # db.add(db_issue)
-    # db.commit()
+    # Salva nel database
+    db_issue = models.Issue(
+        text=issue.text,
+        classification=classification
+    )
+    db.add(db_issue)
+    db.commit()
+    db.refresh(db_issue)
     
     return classification
 
