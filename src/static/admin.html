@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TellNow - Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">
@@ -15,30 +16,52 @@
             </div>
         </div>
 
-        <!-- Stats Overview -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Overview Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h3 class="text-gray-500 text-sm">Totale Segnalazioni</h3>
                 <p class="text-2xl font-bold" id="totalIssues">-</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow-md">
-                <h3 class="text-gray-500 text-sm">Distribuzione Categorie</h3>
-                <div id="categoryStats" class="mt-2"></div>
+                <h3 class="text-gray-500 text-sm">Alta Urgenza</h3>
+                <p class="text-2xl font-bold text-red-600" id="highUrgency">-</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-gray-500 text-sm">Zone Più Segnalate</h3>
+                <p class="text-2xl font-bold" id="topZone">-</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-gray-500 text-sm">Categoria Più Frequente</h3>
+                <p class="text-2xl font-bold" id="topCategory">-</p>
             </div>
         </div>
 
-        <!-- Recent Issues -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Distribuzione Categorie</h2>
+                <canvas id="categoriesChart"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Distribuzione Zone</h2>
+                <canvas id="zonesChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Recent Issues Table -->
+        <div class="bg-white p-6 rounded-lg shadow-md overflow-hidden">
             <h2 class="text-xl font-semibold mb-4">Ultime Segnalazioni</h2>
             <div class="overflow-x-auto">
                 <table class="min-w-full">
                     <thead>
                         <tr class="bg-gray-50">
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Testo</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CAP</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Problema</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">CAP</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Categoria</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Urgenza</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Zona</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Azioni Suggerite</th>
                         </tr>
                     </thead>
                     <tbody id="issuesTable"></tbody>
@@ -52,18 +75,101 @@
             const response = await fetch('/api/stats');
             const data = await response.json();
 
-            // Aggiorna totale
+            // Aggiorna cards
             document.getElementById('totalIssues').textContent = data.total;
+            document.getElementById('highUrgency').textContent = data.high_urgency_count;
+            document.getElementById('topZone').textContent = data.top_zone;
+            document.getElementById('topCategory').textContent = data.top_category;
 
-            // Aggiorna statistiche categorie
-            const categoryStats = document.getElementById('categoryStats');
-            categoryStats.innerHTML = data.by_category
-                .map(cat => `
-                    <div class="flex justify-between items-center py-1">
-                        <span class="text-gray-600">${cat.category}</span>
-                        <span class="font-semibold">${cat.count}</span>
-                    </div>
-                `).join('');
+            // Aggiorna grafici
+            updateCategoriesChart(data.categories_distribution);
+            updateZonesChart(data.zones_distribution);
+
+            // Aggiorna tabella
+            const issuesTable = document.getElementById('issuesTable');
+            issuesTable.innerHTML = data.recent_issues.map(issue => `
+                <tr class="border-b">
+                    <td class="px-6 py-4">${issue.id}</td>
+                    <td class="px-6 py-4">${issue.text}</td>
+                    <td class="px-6 py-4">${issue.cap}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 rounded-full text-xs ${getCategoryColor(issue.classification.category)}">
+                            ${issue.classification.category}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 rounded-full text-xs ${getUrgencyColor(issue.classification.urgency)}">
+                            ${issue.classification.urgency}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">${issue.classification.zone_type}</td>
+                    <td class="px-6 py-4">
+                        <ul class="list-disc pl-4">
+                            ${issue.classification.suggested_actions.map(action => 
+                                `<li class="text-sm">${action}</li>`
+                            ).join('')}
+                        </ul>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateCategoriesChart(data) {
+            const ctx = document.getElementById('categoriesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(data),
+                    datasets: [{
+                        data: Object.values(data),
+                        backgroundColor: [
+                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
+                            '#9966FF', '#FF9F40', '#FF6384', '#36A2EB'
+                        ]
+                    }]
+                }
+            });
+        }
+
+        function updateZonesChart(data) {
+            const ctx = document.getElementById('zonesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(data),
+                    datasets: [{
+                        label: 'Segnalazioni per Zona',
+                        data: Object.values(data),
+                        backgroundColor: '#4BC0C0'
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function getCategoryColor(category) {
+            const colors = {
+                roads: 'bg-blue-100 text-blue-800',
+                garbage: 'bg-green-100 text-green-800',
+                safety: 'bg-red-100 text-red-800',
+                // ... altri colori per categorie
+            };
+            return colors[category] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getUrgencyColor(urgency) {
+            const colors = {
+                high: 'bg-red-100 text-red-800',
+                medium: 'bg-yellow-100 text-yellow-800',
+                low: 'bg-green-100 text-green-800'
+            };
+            return colors[urgency];
         }
 
         // Carica i dati iniziali

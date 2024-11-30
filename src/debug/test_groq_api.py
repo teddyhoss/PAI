@@ -7,7 +7,7 @@ from src.services.classifier import IssueClassifier
 def test_groq_api():
     try:
         classifier = IssueClassifier()
-        test_text = "L'applicazione si blocca quando provo a salvare un file PDF"
+        test_text = "C'è un albero caduto che blocca Via Roma dopo il temporale di ieri"
         
         print("🔄 Testing Groq API...")
         result = classifier.classify_issue(test_text)
