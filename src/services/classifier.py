@@ -7,7 +7,7 @@ load_dotenv()
 class IssueClassifier:
     def __init__(self):
         self.client = groq.Groq(api_key=os.getenv("GROQ_API_KEY"))
-        self.model = "llama3-8b-8192"
+        self.model = "llama-3.1-70b-versatile"
 
     def classify_issue(self, issue_text: str) -> dict:
         prompt = f"""Analizza il seguente problema e classificalo in una delle seguenti categorie:
