@@ -14,7 +14,7 @@
         </div>
 
         <!-- Form singola segnalazione -->
-        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <div class="bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-xl font-semibold mb-4">Inserisci una segnalazione</h2>
             <form id="issueForm" class="space-y-4">
                 <div>
@@ -36,25 +36,6 @@
                 <pre id="classification" class="bg-gray-100 p-4 rounded mt-2"></pre>
             </div>
         </div>
-
-        <!-- Upload CSV -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-semibold mb-4">Carica CSV</h2>
-            <form id="csvForm" class="space-y-4">
-                <div>
-                    <input type="file" id="csvFile" accept=".csv" 
-                           class="w-full p-2 border rounded" required>
-                </div>
-                <button type="submit" 
-                        class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                    Carica
-                </button>
-            </form>
-            <div id="csvResult" class="mt-4 hidden">
-                <h3 class="font-semibold">Risultato elaborazione:</h3>
-                <pre id="csvProcessing" class="bg-gray-100 p-4 rounded mt-2"></pre>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -73,30 +54,13 @@
                 });
                 
                 const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
                 document.getElementById('classification').textContent = JSON.stringify(data, null, 2);
                 document.getElementById('result').classList.remove('hidden');
             } catch (error) {
                 alert('Errore durante la classificazione: ' + error);
-            }
-        });
-
-        document.getElementById('csvForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const file = document.getElementById('csvFile').files[0];
-            const formData = new FormData();
-            formData.append('file', file);
-            
-            try {
-                const response = await fetch('/upload-csv/', {
-                    method: 'POST',
-                    body: formData,
-                });
-                
-                const data = await response.json();
-                document.getElementById('csvProcessing').textContent = JSON.stringify(data, null, 2);
-                document.getElementById('csvResult').classList.remove('hidden');
-            } catch (error) {
-                alert('Errore durante l\'elaborazione del CSV: ' + error);
             }
         });
     </script>

@@ -1,0 +1,182 @@
+2024-11-30 18:06:30,202 - DEBUG - Modalità debug attivata per il classifier
+2024-11-30 18:08:31,120 - DEBUG - Modalità debug attivata per il classifier
+2024-11-30 18:08:44,711 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:08:44,712 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:08:44,712 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:08:44,713 - DEBUG - Tutti i tentativi falliti per errore, ritorno risposta di default
+2024-11-30 18:09:44,950 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:44,951 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:44,951 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:44,951 - DEBUG - Tutti i tentativi falliti per errore, ritorno risposta di default
+2024-11-30 18:09:49,123 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:49,123 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:49,123 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:49,123 - DEBUG - Tutti i tentativi falliti per errore, ritorno risposta di default
+2024-11-30 18:09:50,763 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:50,763 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:50,763 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:50,763 - DEBUG - Tutti i tentativi falliti per errore, ritorno risposta di default
+2024-11-30 18:09:51,636 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:51,637 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:51,637 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:51,637 - DEBUG - Tutti i tentativi falliti per errore, ritorno risposta di default
+2024-11-30 18:09:52,134 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:52,135 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:52,135 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:52,135 - DEBUG - Tutti i tentativi falliti per errore, ritorno risposta di default
+2024-11-30 18:09:53,836 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:53,837 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:53,837 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:53,837 - DEBUG - Tutti i tentativi falliti per errore, ritorno risposta di default
+2024-11-30 18:09:56,558 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:56,558 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:56,558 - DEBUG - Errore durante l'esecuzione: 'IssueClassifier' object has no attribute 'categories'
+2024-11-30 18:09:56,558 - DEBUG - Tutti i tentativi falliti per errore, ritorno risposta di default
+2024-11-30 18:12:25,297 - DEBUG - Modalità debug attivata per il classifier
+2024-11-30 18:13:06,103 - DEBUG - Tentativo 1/3
+2024-11-30 18:13:06,103 - DEBUG - Prompt inviato: {
+  "issue_text": "ce un incidente sulla salaria 3 macchine bloccano la strada",
+  "cap": "00182"
+}
+2024-11-30 18:13:06,892 - DEBUG - Risposta ricevuta dal modello: {
+  "response": "{\n  \"category\": \"traffic\",\n  \"urgency\": \"high\",\n  \"explanation\": \"L'incidente sulla strada con 3 macchine bloccate richiede un intervento immediato per garantire la sicurezza dei conducenti e dei pedoni e per ripristinare la normale viabilità.\"\n}"
+}
+2024-11-30 18:13:06,893 - DEBUG - JSON estratto con regex: {
+  "category": "traffic",
+  "urgency": "high",
+  "explanation": "L'incidente sulla strada con 3 macchine bloccate richiede un intervento immediato per garantire la sicurezza dei conducenti e dei pedoni e per ripristinare la normale viabilità."
+}
+2024-11-30 18:13:06,894 - DEBUG - Risposta validata e formattata con successo: {
+  "category": "traffic",
+  "urgency": "high",
+  "explanation": "L'incidente sulla strada con 3 macchine bloccate richiede un intervento immediato per garantire la sicurezza dei conducenti e dei pedoni e per ripristinare la normale viabilità."
+}
+2024-11-30 18:13:32,276 - DEBUG - Tentativo 1/3
+2024-11-30 18:13:32,277 - DEBUG - Prompt inviato: {
+  "issue_text": "voglio un parco nuovo sotto casa",
+  "cap": "00182"
+}
+2024-11-30 18:13:32,837 - DEBUG - Tentativo 1/3
+2024-11-30 18:13:32,837 - DEBUG - Prompt inviato: {
+  "issue_text": "voglio un parco nuovo sotto casa",
+  "cap": "00182"
+}
+2024-11-30 18:13:33,608 - DEBUG - Risposta ricevuta dal modello: {
+  "response": "{\n    \"category\": \"parks\",\n    \"urgency\": \"low\",\n    \"explanation\": \"La richiesta di un parco nuovo sotto casa non è un problema urgente, ma piuttosto una proposta di miglioramento della qualità della vita dei cittadini. Pertanto, è classificata come una richiesta di bassa urgenza nella categoria 'parchi, giardini pubblici'.\"\n}"
+}
+2024-11-30 18:13:33,608 - DEBUG - JSON estratto con regex: {
+  "category": "parks",
+  "urgency": "low",
+  "explanation": "La richiesta di un parco nuovo sotto casa non è un problema urgente, ma piuttosto una proposta di miglioramento della qualità della vita dei cittadini. Pertanto, è classificata come una richiesta di bassa urgenza nella categoria 'parchi, giardini pubblici'."
+}
+2024-11-30 18:13:33,609 - DEBUG - Risposta validata e formattata con successo: {
+  "category": "parks",
+  "urgency": "low",
+  "explanation": "La richiesta di un parco nuovo sotto casa non è un problema urgente, ma piuttosto una proposta di miglioramento della qualità della vita dei cittadini. Pertanto, è classificata come una richiesta di bassa urgenza nella categoria 'parchi, giardini pubblici'."
+}
+2024-11-30 18:13:48,663 - DEBUG - Risposta ricevuta dal modello: {
+  "response": "{\n    \"category\": \"parks\",\n    \"urgency\": \"low\",\n    \"explanation\": \"Il problema richiede la creazione di un nuovo parco, che non è una questione di urgenza immediata, ma piuttosto una richiesta di miglioramento della qualità della vita e dell'ambiente urbano.\"\n}"
+}
+2024-11-30 18:13:48,664 - DEBUG - JSON estratto con regex: {
+  "category": "parks",
+  "urgency": "low",
+  "explanation": "Il problema richiede la creazione di un nuovo parco, che non è una questione di urgenza immediata, ma piuttosto una richiesta di miglioramento della qualità della vita e dell'ambiente urbano."
+}
+2024-11-30 18:13:48,664 - DEBUG - Risposta validata e formattata con successo: {
+  "category": "parks",
+  "urgency": "low",
+  "explanation": "Il problema richiede la creazione di un nuovo parco, che non è una questione di urgenza immediata, ma piuttosto una richiesta di miglioramento della qualità della vita e dell'ambiente urbano."
+}
+2024-11-30 18:13:49,062 - DEBUG - Tentativo 1/3
+2024-11-30 18:13:49,063 - DEBUG - Prompt inviato: {
+  "issue_text": "ce una mucca che attraversa ogni ora la strada",
+  "cap": "00182"
+}
+2024-11-30 18:13:49,787 - DEBUG - Risposta ricevuta dal modello: {
+  "response": "{\n  \"category\": \"traffic\",\n  \"urgency\": \"medium\",\n  \"explanation\": \"La presenza di una mucca che attraversa la strada ogni ora può rappresentare un rischio per la sicurezza dei conducenti e dei pedoni, quindi è necessario un intervento per garantire la viabilità e la sicurezza stradale.\"\n}"
+}
+2024-11-30 18:13:49,787 - DEBUG - JSON estratto con regex: {
+  "category": "traffic",
+  "urgency": "medium",
+  "explanation": "La presenza di una mucca che attraversa la strada ogni ora può rappresentare un rischio per la sicurezza dei conducenti e dei pedoni, quindi è necessario un intervento per garantire la viabilità e la sicurezza stradale."
+}
+2024-11-30 18:13:49,788 - DEBUG - Risposta validata e formattata con successo: {
+  "category": "traffic",
+  "urgency": "medium",
+  "explanation": "La presenza di una mucca che attraversa la strada ogni ora può rappresentare un rischio per la sicurezza dei conducenti e dei pedoni, quindi è necessario un intervento per garantire la viabilità e la sicurezza stradale."
+}
+2024-11-30 18:14:10,925 - DEBUG - Tentativo 1/3
+2024-11-30 18:14:10,925 - DEBUG - Prompt inviato: {
+  "issue_text": "ce un cinghiale che si sta mangiando le colture",
+  "cap": "00182"
+}
+2024-11-30 18:14:16,819 - DEBUG - Risposta ricevuta dal modello: {
+  "response": "{\n    \"category\": \"other\",\n    \"urgency\": \"medium\",\n    \"explanation\": \"Il problema del cinghiale che si sta mangiando le colture non rientra in nessuna delle categorie specifiche elencate, quindi viene classificato come 'other'. La classificazione di urgenza è 'medium' perché il problema potrebbe avere un impatto significativo sull'economia locale e sulla produzione agricola, ma non rappresenta una minaccia immediata per la sicurezza pubblica.\"\n}"
+}
+2024-11-30 18:14:16,820 - DEBUG - JSON estratto con regex: {
+  "category": "other",
+  "urgency": "medium",
+  "explanation": "Il problema del cinghiale che si sta mangiando le colture non rientra in nessuna delle categorie specifiche elencate, quindi viene classificato come 'other'. La classificazione di urgenza è 'medium' perché il problema potrebbe avere un impatto significativo sull'economia locale e sulla produzione agricola, ma non rappresenta una minaccia immediata per la sicurezza pubblica."
+}
+2024-11-30 18:14:16,820 - DEBUG - Risposta validata e formattata con successo: {
+  "category": "other",
+  "urgency": "medium",
+  "explanation": "Il problema del cinghiale che si sta mangiando le colture non rientra in nessuna delle categorie specifiche elencate, quindi viene classificato come 'other'. La classificazione di urgenza è 'medium' perché il problema potrebbe avere un impatto significativo sull'economia locale e sulla produzione agricola, ma non rappresenta una minaccia immediata per la sicurezza pubblica."
+}
+2024-11-30 18:15:08,521 - DEBUG - Tentativo 1/3
+2024-11-30 18:15:08,522 - DEBUG - Prompt inviato: {
+  "issue_text": "e caduto un albero e ha ferito tre persone all universita",
+  "cap": "00182"
+}
+2024-11-30 18:15:09,460 - DEBUG - Risposta ricevuta dal modello: {
+  "response": "{\n    \"category\": \"emergency\",\n    \"urgency\": \"high\",\n    \"explanation\": \"La caduta di un albero che ha ferito tre persone all'università rappresenta una situazione di emergenza che richiede un intervento immediato per garantire la sicurezza delle persone coinvolte e di quelle presenti nella zona.\"\n}"
+}
+2024-11-30 18:15:09,460 - DEBUG - JSON estratto con regex: {
+  "category": "emergency",
+  "urgency": "high",
+  "explanation": "La caduta di un albero che ha ferito tre persone all'università rappresenta una situazione di emergenza che richiede un intervento immediato per garantire la sicurezza delle persone coinvolte e di quelle presenti nella zona."
+}
+2024-11-30 18:15:09,462 - DEBUG - Risposta validata e formattata con successo: {
+  "category": "emergency",
+  "urgency": "high",
+  "explanation": "La caduta di un albero che ha ferito tre persone all'università rappresenta una situazione di emergenza che richiede un intervento immediato per garantire la sicurezza delle persone coinvolte e di quelle presenti nella zona."
+}
+2024-11-30 18:15:11,376 - DEBUG - Tentativo 1/3
+2024-11-30 18:15:11,376 - DEBUG - Prompt inviato: {
+  "issue_text": "e caduto un albero e ha ferito tre persone all universita",
+  "cap": "00182"
+}
+2024-11-30 18:15:12,217 - DEBUG - Risposta ricevuta dal modello: {
+  "response": "{\n  \"category\": \"emergency\",\n  \"urgency\": \"high\",\n  \"explanation\": \"La caduta di un albero che ha ferito tre persone all'università rappresenta una situazione di emergenza che richiede un intervento immediato per garantire la sicurezza delle persone coinvolte e prevenire ulteriori incidenti.\"\n}"
+}
+2024-11-30 18:15:12,218 - DEBUG - JSON estratto con regex: {
+  "category": "emergency",
+  "urgency": "high",
+  "explanation": "La caduta di un albero che ha ferito tre persone all'università rappresenta una situazione di emergenza che richiede un intervento immediato per garantire la sicurezza delle persone coinvolte e prevenire ulteriori incidenti."
+}
+2024-11-30 18:15:12,218 - DEBUG - Risposta validata e formattata con successo: {
+  "category": "emergency",
+  "urgency": "high",
+  "explanation": "La caduta di un albero che ha ferito tre persone all'università rappresenta una situazione di emergenza che richiede un intervento immediato per garantire la sicurezza delle persone coinvolte e prevenire ulteriori incidenti."
+}
+2024-11-30 18:41:57,041 - DEBUG - Modalità debug attivata per il classifier
+2024-11-30 18:42:50,544 - DEBUG - Tentativo 1/3
+2024-11-30 18:42:50,545 - DEBUG - Prompt inviato: {
+  "issue_text": "ce un albero sulla strada che blocca il passaggio delle macchine",
+  "cap": "00182"
+}
+2024-11-30 18:42:51,433 - DEBUG - Risposta ricevuta dal modello: {
+  "response": "{\n  \"category\": \"trees\",\n  \"urgency\": \"high\",\n  \"explanation\": \"L'albero sulla strada blocca il passaggio delle macchine, rappresentando un ostacolo per la circolazione e potenzialmente un pericolo per la sicurezza dei conducenti e dei pedoni. Pertanto, è necessario un intervento rapido per risolvere il problema.\"\n}"
+}
+2024-11-30 18:42:51,434 - DEBUG - JSON estratto con regex: {
+  "category": "trees",
+  "urgency": "high",
+  "explanation": "L'albero sulla strada blocca il passaggio delle macchine, rappresentando un ostacolo per la circolazione e potenzialmente un pericolo per la sicurezza dei conducenti e dei pedoni. Pertanto, è necessario un intervento rapido per risolvere il problema."
+}
+2024-11-30 18:42:51,435 - DEBUG - Risposta validata e formattata con successo: {
+  "category": "trees",
+  "urgency": "high",
+  "explanation": "L'albero sulla strada blocca il passaggio delle macchine, rappresentando un ostacolo per la circolazione e potenzialmente un pericolo per la sicurezza dei conducenti e dei pedoni. Pertanto, è necessario un intervento rapido per risolvere il problema."
+}
+2024-11-30 18:45:52,697 - DEBUG - Modalità debug attivata per il classifier
+2024-11-30 18:47:15,719 - DEBUG - Modalità debug attivata per il classifier
