@@ -35,4 +35,6 @@ response = client.chat.completions.create(
     tools=th.get_tools(),
 )
 
+
+
 print(response.choices[0].message.content)
