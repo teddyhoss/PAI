@@ -93,6 +93,8 @@ export function SendMessage({
           description: data.error,
           variant: "destructive",
         });
+
+        return;
       }
 
       const main_container_home_page = document.getElementById(

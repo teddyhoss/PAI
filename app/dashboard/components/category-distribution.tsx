@@ -17,7 +17,7 @@ ChartJS.register(
   LineElement,
   Filler,
   Tooltip,
-  Legend
+  Legend,
 );
 
 type StatsResponse = {
@@ -37,13 +37,13 @@ export function CategoryDistribution() {
   const fetchData = async () => {
     try {
       const response = await fetch("http://localhost:8000/api/stats");
-      if (!response.ok) throw new Error('Errore nel caricamento dei dati');
+      if (!response.ok) throw new Error("Errore nel caricamento dei dati");
       const data: StatsResponse = await response.json();
       setStats(data);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Errore sconosciuto');
-      console.error('Errore nel fetch dei dati:', err);
+      setError(err instanceof Error ? err.message : "Errore sconosciuto");
+      console.error("Errore nel fetch dei dati:", err);
     }
   };
 
@@ -64,11 +64,11 @@ export function CategoryDistribution() {
   // Pulisce le chiavi delle categorie rimuovendo le virgolette
   const cleanCategories = Object.entries(stats.categories_distribution).reduce(
     (acc, [key, value]) => {
-      const cleanKey = key.replace(/['"]+/g, '');
+      const cleanKey = key.replace(/['"]+/g, "");
       acc[cleanKey] = value;
       return acc;
     },
-    {} as { [key: string]: number }
+    {} as { [key: string]: number },
   );
 
   const data = {
@@ -100,8 +100,8 @@ export function CategoryDistribution() {
         callbacks: {
           label: (context: any) => {
             return `Segnalazioni: ${context.raw}`;
-          }
-        }
+          },
+        },
       },
     },
     scales: {
@@ -112,8 +112,8 @@ export function CategoryDistribution() {
         suggestedMin: 0,
         suggestedMax: Math.max(...Object.values(cleanCategories)) + 1,
         ticks: {
-          stepSize: 1
-        }
+          stepSize: 1,
+        },
       },
     },
   };
