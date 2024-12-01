@@ -11,6 +11,7 @@ from sqlalchemy import func, text, cast
 from sqlalchemy.types import String
 from fastapi.middleware.cors import CORSMiddleware
 import os
+from fastapi.responses import JSONResponse
 
 app = FastAPI(title="TellNow")
 classifier = IssueClassifier()
@@ -49,7 +50,18 @@ def classify_issue(issue: Issue, db: Session = Depends(get_db)):
         # Classifica il problema
         classification = classifier.classify_issue(issue.text, issue.cap)
         
-        # Salva nel database
+        # Se la segnalazione non è valida, ritorna un errore
+        if not classification.get("valid", False):
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "error": "Segnalazione non valida",
+                    "original_text": classification.get("original_text", issue.text),
+                    "reason": classification.get("reason", "Motivo non specificato")
+                }
+            )
+
+        # Salva nel database solo se la segnalazione è valida
         db_issue = models.Issue(
             text=issue.text,
             cap=issue.cap,
@@ -67,9 +79,16 @@ def classify_issue(issue: Issue, db: Session = Depends(get_db)):
             classification=db_issue.classification,
             timestamp=db_issue.timestamp
         )
+        
     except Exception as e:
-        print(f"Error in classify_issue: {str(e)}")
-        return {"error": str(e)}
+        logger.error(f"Error in classify_issue: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": str(e),
+                "original_text": issue.text
+            }
+        )
 
 @app.get("/api/stats")
 def get_stats(db: Session = Depends(get_db)):

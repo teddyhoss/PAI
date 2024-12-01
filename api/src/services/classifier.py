@@ -114,7 +114,49 @@ class IssueClassifier:
 
     def classify_issue(self, issue_text: str, cap: str) -> dict:
         try:
-            # Step 1: Geolocalizzazione dal CAP
+            # Step 1: Valutazione della validità della segnalazione
+            validation_prompt = f"""Sei un esperto di segnalazioni della PA italiana.
+            Valuta se questa segnalazione è valida e utile:
+            "{issue_text}"
+            
+            Rispondi SOLO con un JSON:
+            {{
+                "is_valid": true/false,
+                "reason": "spiegazione della decisione"
+            }}
+            
+            Una segnalazione è valida se:
+            - È una vera problematica della PA
+            - Non è spam o contenuto offensivo
+            - Non è un test o una prova
+            - Ha un contenuto comprensibile e specifico
+            - Richiede un'azione concreta
+            """
+
+            validation_response = self.client.chat.completions.create(
+                messages=[
+                    {"role": "system", "content": "Sei un validatore di segnalazioni della PA italiana."},
+                    {"role": "user", "content": validation_prompt}
+                ],
+                model=self.model,
+                temperature=0.3
+            )
+
+            validation_data = self._extract_json_from_text(validation_response.choices[0].message.content)
+            self._debug_log("Risultato validazione:", validation_data)
+
+            if not validation_data or not validation_data.get('is_valid', False):
+                self._debug_log("Segnalazione non valida:", {
+                    "text": issue_text,
+                    "reason": validation_data.get('reason') if validation_data else "Errore nella validazione"
+                })
+                return {
+                    "valid": False,
+                    "reason": validation_data.get('reason', "Segnalazione non valida") if validation_data else "Errore nella validazione"
+                }
+
+            # Se la segnalazione è valida, procedi con la classificazione normale
+            # Step 2: Geolocalizzazione dal CAP
             geo_prompt = f"""Sei un esperto di geografia italiana.
             Per il CAP {cap}, fornisci SOLO un JSON con:
             {{
@@ -125,7 +167,7 @@ class IssueClassifier:
 
             geo_response = self.client.chat.completions.create(
                 messages=[
-                    {"role": "system", "content": "Sei un esperto di geolocalizzazione italiana. Rispondi solo con dati precisi."},
+                    {"role": "system", "content": "Sei un esperto di geolocalizzazione italiana."},
                     {"role": "user", "content": geo_prompt}
                 ],
                 model=self.model,
@@ -135,7 +177,7 @@ class IssueClassifier:
             geo_data = self._extract_json_from_text(geo_response.choices[0].message.content)
             self._debug_log("Dati geografici ottenuti:", geo_data)
 
-            # Step 2: Classificazione del problema
+            # Step 3: Classificazione del problema
             categories_list = "\n".join([f"- {k}: {v}" for k, v in self.categories.items()])
             class_prompt = f"""Analizza questo problema della PA italiana:
             {issue_text}
@@ -162,9 +204,11 @@ class IssueClassifier:
             class_data = self._extract_json_from_text(class_response.choices[0].message.content)
             self._debug_log("Dati classificazione ottenuti:", class_data)
 
-            # Combina i risultati
+            # Combina i risultati solo se la segnalazione è valida
             if geo_data and class_data:
                 final_result = {
+                    "valid": True,
+                    "original_text": issue_text,
                     "city": geo_data.get("city", "Unknown"),
                     "coordinates": geo_data.get("coordinates", [0, 0]),
                     "category": class_data.get("category", "other"),
@@ -178,8 +222,16 @@ class IssueClassifier:
                     "geo_data": geo_data,
                     "class_data": class_data
                 })
-                return self._format_response({})
+                return {
+                    "valid": False,
+                    "original_text": issue_text,
+                    "reason": "Errore nell'elaborazione dei dati"
+                }
 
         except Exception as e:
             self._debug_log(f"Errore durante la classificazione: {str(e)}")
-            return self._format_response({})
+            return {
+                "valid": False,
+                "original_text": issue_text,
+                "reason": f"Errore tecnico: {str(e)}"
+            }
