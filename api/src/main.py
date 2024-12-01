@@ -18,7 +18,7 @@ classifier = IssueClassifier()
 # Configurazione CORS aggiornata
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],  # Aggiungi qui i domini frontend
+    allow_origins=["http://localhost:3000", "http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
@@ -28,20 +28,6 @@ app.add_middleware(
 
 # Crea le tabelle nel database
 Base.metadata.create_all(bind=engine)
-
-# Sposta il logo nella cartella static
-import shutil
-import os
-
-# Crea la cartella images se non esiste
-# os.makedirs("src/static/images", exist_ok=True)
-
-# Copia il logo nella cartella static/images se non è già presente
-# if not os.path.exists("src/static/images/TalkNow.png"):
-#     shutil.copy("TalkNow.png", "src/static/images/TalkNow.png")
-
-# Monta la cartella static
-# app.mount("/static", StaticFiles(directory="src/static"), name="static")
 
 class Issue(BaseModel):
     text: str
@@ -54,13 +40,8 @@ class IssueResponse(BaseModel):
     classification: dict
     timestamp: datetime
     
-    @property
-    def city(self) -> str:
-        return self.classification.get('city', 'Unknown')
-    
-    @property
-    def coordinates(self) -> list:
-        return self.classification.get('coordinates', [0, 0])
+    class Config:
+        from_attributes = True
 
 @app.post("/api/classify/", response_model=IssueResponse)
 def classify_issue(issue: Issue, db: Session = Depends(get_db)):
@@ -87,6 +68,7 @@ def classify_issue(issue: Issue, db: Session = Depends(get_db)):
             timestamp=db_issue.timestamp
         )
     except Exception as e:
+        print(f"Error in classify_issue: {str(e)}")
         return {"error": str(e)}
 
 @app.get("/api/stats")
@@ -95,11 +77,10 @@ def get_stats(db: Session = Depends(get_db)):
         # Totale segnalazioni
         total = db.query(models.Issue).count()
         
-        # Conteggio per urgenza alta usando sintassi PostgreSQL corretta
+        # Conteggio urgenza alta
         high_urgency_count = db.query(models.Issue)\
             .filter(cast(models.Issue.classification['urgency'], String) == 'high')\
             .count()
-        
             
         # Distribuzione per categoria
         categories_query = db.query(
@@ -152,16 +133,8 @@ def get_stats(db: Session = Depends(get_db)):
             } for issue in recent_issues]
         }
     except Exception as e:
-        print(f"Errore in get_stats: {str(e)}")  # Debug log
+        print(f"Errore in get_stats: {str(e)}")
         return {"error": str(e)}
-
-# @app.get("/api/check-logo")
-# def check_logo():
-#     logo_path = "src/static/images/TalkNow.png"
-#     return {
-#         "exists": os.path.exists(logo_path),
-#         "size": os.path.getsize(logo_path) if os.path.exists(logo_path) else 0
-#     }
 
 @app.get("/api/check")
 def check():
