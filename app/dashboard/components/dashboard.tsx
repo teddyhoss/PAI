@@ -1,6 +1,8 @@
 import { useTranslations } from "next-intl";
 // @components
 import { Circle } from "./circle";
+import { DataTable } from "./data-table";
+import { columns, EmergencyReport } from "./columns";
 import { AreaDistribution } from "./area-distribution";
 import { CategoryDistribution } from "./category-distribution";
 
@@ -9,6 +11,7 @@ interface Props {
   highUrgency: number;
   mostReportedAreas: string;
   mostFrequencyCategory: string;
+  data: Array<EmergencyReport>;
 }
 
 export function Dashboard({
@@ -16,6 +19,7 @@ export function Dashboard({
   highUrgency,
   mostReportedAreas,
   mostFrequencyCategory,
+  data,
 }: Readonly<Props>) {
   const t = useTranslations("dashboard");
 
@@ -57,7 +61,7 @@ export function Dashboard({
           </div>
         </div>
       </div>
-      {/* <div className="bg-white shadow-md rounded-lg p-4">
+      <div className="bg-white shadow-md rounded-lg p-4">
         <h2 className="text-gray-600 font-semibold mb-4">
           {t("latest_reports")}
         </h2>
@@ -65,23 +69,10 @@ export function Dashboard({
           <DataTable
             placeholder_input={t("table.placeholder_input")}
             columns={columns}
-            data={[
-              {
-                id: 31,
-                text: "Un'auto ha preso fuoco in via Roma",
-                cap: "00100",
-                classification: {
-                  category: "emergency",
-                  urgency: "high",
-                  explanation:
-                    "Un'auto è in fiamme in via Roma, situazione che richiede un intervento immediato per evitare il rischio di esplosioni o danni ad altre proprietà.",
-                },
-                timestamp: "2024-12-01T03:15:47.102928Z",
-              },
-            ]}
+            data={data}
           />
         </div>
-      </div> */}
+      </div>
       <br />
       <Circle />
     </div>

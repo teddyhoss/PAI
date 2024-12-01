@@ -10,11 +10,9 @@ export type EmergencyReport = {
   id: number;
   text: string;
   cap: string;
-  classification: {
-    category: string;
-    urgency: string;
-    explanation: string;
-  };
+  category: string;
+  urgency: string;
+  explanation: string;
   timestamp: string;
 };
 
@@ -28,11 +26,11 @@ export const columns: ColumnDef<EmergencyReport>[] = [
     header: "Cap",
   },
   {
-    accessorKey: "classification.category",
+    accessorKey: "category",
     header: language === "it" ? "Categoria" : "Category",
   },
   {
-    accessorKey: "classification.urgency",
+    accessorKey: "urgency",
     header: language === "it" ? "Urgenza" : "Urgency",
   },
   {
