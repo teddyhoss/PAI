@@ -189,7 +189,7 @@ class IssueClassifier:
             {{
                 "category": "categoria del problema",
                 "urgency": "livello di urgenza (low, medium, high)",
-                "explanation": "breve spiegazione in italiano"
+                "explanation": "descrivi il feedback con una frase da 2 a 5 parole"
             }}"""
 
             class_response = self.client.chat.completions.create(
