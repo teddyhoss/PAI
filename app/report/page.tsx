@@ -5,6 +5,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { notFound } from "next/navigation";
+import { ToDashboard } from "./components/to-dashboard";
 
 interface Props {
   searchParams: Promise<{
@@ -35,24 +36,41 @@ export default async function ReportPage({ searchParams }: Readonly<Props>) {
     )[0];
 
     return (
-      <div className="w-full h-full p-12">
-        <Card className="w-full h-full p-8 space-y-4">
-          <CardTitle className="flex flex-wrap gap-4 justify-evenly">
-            <p>Numero ID: {issue.id}</p>
-            <p>Urgenza: {issue.urgency}</p>
-            <p>Categoria: {issue.category}</p>
+      <div className="w-full md:w-[50%] h-full p-12">
+        <Card className="w-full h-full p-8 space-y-4 rounded-3xl">
+          <CardTitle className="flex flex-wrap gap-8">
+            <div>
+              <ToDashboard />
+            </div>
+            <div className="flex flex-grow gap-4 justify-evenly">
+              <p>
+                <span className="text-[#2d62c8]">Numero ID:</span> {issue.id}
+              </p>
+              <p>
+                <span className="text-[#2d62c8]">Urgenza:</span> {issue.urgency}
+              </p>
+              <p>
+                <span className="text-[#2d62c8]">Categoria:</span>{" "}
+                {issue.category}
+              </p>
+            </div>
           </CardTitle>
+          <br />
+          <br />
+          <br />
           <CardContent>
             <div>
-              <h2 className="text-2xl">Problema:</h2>
-              <p>{issue.explanation}</p>
+              <h2 className="text-2xl text-[#2d62c8] font-bold">Riassunto:</h2>
+              <p className="text-xl">{issue.explanation}</p>
               <br />
             </div>
             <hr />
             <br />
             <div>
-              <h2 className="text-2xl">Segnalazione:</h2>
-              <p>{issue.text}</p>
+              <h2 className="text-2xl text-[#2d62c8] font-bold">
+                Segnalazione:
+              </h2>
+              <p className="text-xl">{issue.text}</p>
             </div>
           </CardContent>
         </Card>
