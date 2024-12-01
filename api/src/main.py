@@ -21,14 +21,14 @@ import shutil
 import os
 
 # Crea la cartella images se non esiste
-os.makedirs("src/static/images", exist_ok=True)
+# os.makedirs("src/static/images", exist_ok=True)
 
 # Copia il logo nella cartella static/images se non è già presente
-if not os.path.exists("src/static/images/TalkNow.png"):
-    shutil.copy("TalkNow.png", "src/static/images/TalkNow.png")
+# if not os.path.exists("src/static/images/TalkNow.png"):
+#     shutil.copy("TalkNow.png", "src/static/images/TalkNow.png")
 
 # Monta la cartella static
-app.mount("/static", StaticFiles(directory="src/static"), name="static")
+# app.mount("/static", StaticFiles(directory="src/static"), name="static")
 
 class Issue(BaseModel):
     text: str
@@ -41,7 +41,7 @@ class IssueResponse(BaseModel):
     classification: dict
     timestamp: datetime
 
-@app.post("/classify/", response_model=IssueResponse)
+@app.post("/api/classify/", response_model=IssueResponse)
 def classify_issue(issue: Issue, db: Session = Depends(get_db)):
     try:
         # Classifica il problema
@@ -76,8 +76,9 @@ def get_stats(db: Session = Depends(get_db)):
         
         # Conteggio per urgenza alta usando sintassi PostgreSQL corretta
         high_urgency_count = db.query(models.Issue)\
-            .filter(models.Issue.classification.contains({"urgency": "high"}))\
+            .filter(models.Issue.classification['urgency'] == "high")\
             .count()
+        
             
         # Distribuzione per categoria
         categories_query = db.query(
@@ -131,13 +132,17 @@ def get_stats(db: Session = Depends(get_db)):
         print(f"Errore in get_stats: {str(e)}")  # Debug log
         return {"error": str(e)}
 
-@app.get("/api/check-logo")
-def check_logo():
-    logo_path = "src/static/images/TalkNow.png"
-    return {
-        "exists": os.path.exists(logo_path),
-        "size": os.path.getsize(logo_path) if os.path.exists(logo_path) else 0
-    }
+# @app.get("/api/check-logo")
+# def check_logo():
+#     logo_path = "src/static/images/TalkNow.png"
+#     return {
+#         "exists": os.path.exists(logo_path),
+#         "size": os.path.getsize(logo_path) if os.path.exists(logo_path) else 0
+#     }
+
+@app.get("/api/check")
+def check():
+    return {"status": "ok"}
 
 if __name__ == "__main__":
     import uvicorn

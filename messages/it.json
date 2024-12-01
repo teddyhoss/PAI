@@ -1,0 +1,46 @@
+{
+  "navbar": {
+    "select-language": {
+      "main": "Seleziona una lingua",
+      "it": "Italiano",
+      "en": "Inglese"
+    }
+  },
+  "home": {
+    "welcome": "Benvenuto",
+    "paragraphs": {
+      "first": {
+        "before_main_word": "Segnala in modo",
+        "main_word": "anonimo",
+        "after_main_word": "i tuoi disagi."
+      },
+      "second": {
+        "before_main_word": "Aiutaci a",
+        "main_word": "migliorare",
+        "after_main_word": "i servizi pubblici:"
+      },
+      "third": {
+        "before_main_word": "Insieme possiamo fare la",
+        "main_word": "differenza"
+      }
+    },
+    "form": {
+      "placeholder_input_message": "Scrivi un nuovo messaggio qui...",
+      "placeholder_input_cap": "Scrivi il tuo cap qui...",
+      "error_required_input": "Questo campo è richiesto",
+      "button_submit": "Invia formulario"
+    }
+  },
+  "dashboard": {
+    "reports": "Totale Segnalazioni",
+    "urgency": "Alta Urgenza",
+    "zone": "Zone Più Segnalate",
+    "category": "Categoria Più Frequente",
+    "category_distribution": "Distribuzione Categorie",
+    "area_distribution": "Distribuzione Zone",
+    "latest_reports": "Ultime Segnalazioni",
+    "table": {
+      "placeholder_input": "Cercare per tutte le colonne"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "navbar": {
+    "select-language": {
+      "main": "Select a language",
+      "it": "Italian",
+      "en": "English"
+    }
+  },
+  "home": {
+    "welcome": "Welcome",
+    "paragraphs": {
+      "first": {
+        "before_main_word": "Report in an",
+        "main_word": "anonymous",
+        "after_main_word": "way your discomforts."
+      },
+      "second": {
+        "before_main_word": "Help us",
+        "main_word": "improve",
+        "after_main_word": "public services:"
+      },
+      "third": {
+        "before_main_word": "Together we can make a",
+        "main_word": "difference"
+      }
+    },
+    "form": {
+      "placeholder_input_message": "Write a new message here...",
+      "placeholder_input_cap": "Enter your postal code here...",
+      "error_required_input": "This field is required",
+      "button_submit": "Submit Form"
+    }
+  },
+  "dashboard": {
+    "reports": "Total Reports",
+    "urgency": "High Urgency",
+    "zone": "Most Reported Areas",
+    "category": "Most Frequent Category",
+    "category_distribution": "Category Distribution",
+    "area_distribution": "Area Distribution",
+    "latest_reports": "Latest Reports",
+    "table": { "placeholder_input": "Search across all columns" }
+  }
+}
