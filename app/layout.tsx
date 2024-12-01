@@ -25,10 +25,10 @@ export default async function RootLayout({ children }: Readonly<Props>) {
   return (
     <html lang={locale}>
       <body
-        className={`w-screen h-screen bg-background ${inter.className} flex flex-col text-white`}>
+        className={`w-screen h-screen bg-background ${inter.className} flex flex-col text-[#2d62c8]`}>
         <Header />
         <NextIntlClientProvider messages={messages}>
-          <main className="flex flex-col items-center justify-center flex-grow px-6">
+          <main className="flex flex-col items-center justify-center flex-grow">
             {children}
           </main>
         </NextIntlClientProvider>

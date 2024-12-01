@@ -10,9 +10,9 @@
     "welcome": "Welcome",
     "paragraphs": {
       "first": {
-        "before_main_word": "Report your issues",
-        "main_word": "anonymously",
-        "after_main_word": "."
+        "before_main_word": "Report in an",
+        "main_word": "anonymous",
+        "after_main_word": "way your discomforts."
       },
       "second": {
         "before_main_word": "Help us",
@@ -26,20 +26,21 @@
     },
     "form": {
       "placeholder_input_message": "Write a new message here...",
-      "placeholder_input_cap": "Enter your ZIP code here...",
+      "placeholder_input_cap": "Enter your postal code here...",
+      "error_required_cap": "Enter a valid postal code",
       "error_required_input": "This field is required",
-      "button_submit": "Submit form"
+      "button_submit": "Submit Form"
     },
     "thank_you_for_your_feedback": {
       "thank_you": "Thank you for your report",
-      "phrase": "Your contribution matters!",
+      "phrase": "Your effort matters!",
       "button_submit": "Submit another report"
     }
   },
   "dashboard": {
     "reports": "Total Reports",
     "urgency": "High Urgency",
-    "zone": "Most Reported Zones",
+    "zone": "Most Reported Areas",
     "category": "Most Frequent Category",
     "category_distribution": "Category Distribution",
     "area_distribution": "Area Distribution",

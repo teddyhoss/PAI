@@ -119,7 +119,7 @@ export function SendMessage({
   return (
     <>
       {isDone ? (
-        <div className="space-y-16 flex flex-col items-center justify-center mt-[-220px]">
+        <div className="space-y-16 flex flex-col items-center justify-center">
           <div className="space-y-6 text-center">
             <h2 className="text-4xl md:text-6xl">
               {thank_you_for_your_feedback.thank_you}

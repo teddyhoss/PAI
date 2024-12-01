@@ -8,13 +8,17 @@ export function Header() {
   const t = useTranslations("navbar");
 
   return (
-    <header className="w-full flex items-center justify-between px-12 py-4">
+    <header className="w-full flex items-center justify-between px-6 md:px-24 py-4">
       <Link href="/">
-        <div className="flex items-center">
+        <div className="flex items-center ml-8">
           <Image priority src="/TalkNow.png" alt="" width={100} height={100} />
           <div className="text-left">
-            <p className="text-2xl">TellNow</p>
-            <p className="text-xl">Voices Matter</p>
+            <p className="text-2xl">
+              <b>TellNow</b>
+            </p>
+            <p className="text-xl">
+              <b>Voices Matter</b>
+            </p>
           </div>
         </div>
       </Link>

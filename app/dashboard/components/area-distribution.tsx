@@ -50,15 +50,6 @@ export function AreaDistribution() {
     getData();
   }, []);
 
-  const getStyle = () => {
-    return {
-      weight: 1,
-      opacity: 1,
-      dashArray: "3",
-      fillOpacity: 0.7,
-    };
-  };
-
   const getIcon = (urgency: string) => {
     const color =
       urgency === "high" ? "red" : urgency === "medium" ? "orange" : "green";
@@ -74,7 +65,7 @@ export function AreaDistribution() {
   return (
     <MapContainer
       center={[41.9028, 12.4964]}
-      zoom={6}
+      zoom={5}
       style={{ width: "100%", height: "100%" }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
