@@ -46,7 +46,7 @@
     "area_distribution": "Area Distribution",
     "latest_reports": "Latest Reports",
     "table": {
-      "placeholder_input": "Search across all columns"
+      "placeholder_input": "Search a report"
     }
   }
 }

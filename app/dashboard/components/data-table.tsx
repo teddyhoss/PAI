@@ -58,12 +58,12 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-center py-4">
         <Input
           placeholder={`${placeholder_input}...`}
           value={globalFilter}
           onChange={(event) => setGlobalFilter(event.target.value)}
-          className="max-w-sm bg-white text-black"
+          className="max-w-sm h-16 placeholder:text-base rounded-3xl bg-white text-black"
         />
       </div>
       <div className="rounded-md border text-black">
@@ -73,7 +73,9 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      className="text-base text-[#2d62c8] font-bold"
+                      key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -90,6 +92,7 @@ export function DataTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
+                  className="text-base"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (

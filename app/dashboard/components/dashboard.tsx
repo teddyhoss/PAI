@@ -57,8 +57,12 @@ export function Dashboard({
           </div>
         </div>
       </div>
-      <div className="bg-white shadow-md rounded-3xl p-8 mb-12 flex flex-col items-center justify-center">
-        <h2 className="font-semibold mb-4">{t("latest_reports")}</h2>
+      <div className="bg-white shadow-md rounded-3xl px-8 py-12 mb-12 flex flex-col items-center justify-center">
+        <div className="w-full">
+          <h2 className="font-semibold text-2xl mb-4 text-left ml-40">
+            {t("latest_reports")}
+          </h2>
+        </div>
         <div className="w-[80%]">
           <DataTable
             placeholder_input={t("table.placeholder_input")}
