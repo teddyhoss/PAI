@@ -61,15 +61,17 @@ class IssueClassifier:
             "other": "Altri problemi non categorizzati"
         }
         
+        # Configurazione logger migliorata
         if self.debug:
             os.makedirs('logs', exist_ok=True)
-            fh = logging.FileHandler(f'logs/classifier_{datetime.now().strftime("%Y%m%d")}.log')
+            log_file = f'logs/classifier_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
+            fh = logging.FileHandler(log_file)
             fh.setLevel(logging.DEBUG)
             formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
             fh.setFormatter(formatter)
             logger.addHandler(fh)
             logger.setLevel(logging.DEBUG)
-            logger.debug("Modalità debug attivata per il classifier")
+            logger.debug(f"Inizializzazione classifier - Log file: {log_file}")
 
     def _debug_log(self, message: str, data: Any = None):
         """Funzione helper per logging in modalità debug"""
@@ -82,11 +84,33 @@ class IssueClassifier:
     def _extract_json_from_text(self, text: str) -> Dict[str, Any]:
         """Estrae il JSON dalla risposta del modello usando regex."""
         try:
-            json_match = re.search(r'\{[^{}]*\}', text)
-            if json_match:
-                return json.loads(json_match.group(0))
+            # Log del testo completo ricevuto
+            self._debug_log("Testo completo ricevuto per estrazione JSON:", text)
+            
+            # Pattern regex migliorato per catturare JSON più complessi
+            json_pattern = r'\{(?:[^{}]|(?R))*\}'
+            json_matches = re.finditer(json_pattern, text, re.DOTALL)
+            
+            for match in json_matches:
+                try:
+                    json_str = match.group(0)
+                    self._debug_log("Tentativo di parsing JSON:", json_str)
+                    json_obj = json.loads(json_str)
+                    
+                    # Verifica che il JSON contenga i campi richiesti
+                    required_fields = ['category', 'urgency', 'explanation', 'city', 'coordinates']
+                    if all(field in json_obj for field in required_fields):
+                        self._debug_log("JSON valido trovato:", json_obj)
+                        return json_obj
+                except json.JSONDecodeError as e:
+                    self._debug_log(f"Errore nel parsing JSON: {str(e)}")
+                    continue
+            
+            self._debug_log("Nessun JSON valido trovato nel testo")
             return None
-        except json.JSONDecodeError:
+            
+        except Exception as e:
+            self._debug_log(f"Errore nell'estrazione JSON: {str(e)}")
             return None
 
     def _validate_response(self, response: Dict[str, Any]) -> bool:
@@ -109,35 +133,35 @@ class IssueClassifier:
             try:
                 categories_list = "\n".join([f"- {k}: {v}" for k, v in self.categories.items()])
                 
-                prompt = f"""Analizza attentamente il seguente problema della pubblica amministrazione italiana.
-                Prendi il tempo necessario per una valutazione accurata.
-                
-                Per il CAP {cap}, determina prima la città corrispondente e le sue coordinate geografiche.
-                Poi analizza il problema fornito.
+                prompt = f"""Sei un assistente specializzato nell'analisi di problemi della pubblica amministrazione italiana.
+                La tua priorità è determinare con precisione la città e le coordinate geografiche dal CAP fornito.
                 
                 CAP: {cap}
-                Problema: {issue_text}
+                
+                1. Prima determina la città corrispondente al CAP
+                2. Trova le coordinate geografiche precise della città
+                3. Poi analizza il seguente problema:
+                {issue_text}
 
                 Categorie disponibili:
                 {categories_list}
 
-                Rispondi SOLO con un JSON valido che contiene:
+                IMPORTANTE: Rispondi SOLO con un JSON valido che DEVE contenere questi campi:
                 {{
                     "category": "categoria del problema (una tra quelle elencate)",
                     "urgency": "livello di urgenza (low, medium, high)",
-                    "explanation": "breve sintesi del feedback (2-10 parole massimo)",
-                    "city": "nome della città",
+                    "explanation": "breve spiegazione in italiano della classificazione",
+                    "city": "nome esatto della città",
                     "coordinates": [latitudine, longitudine]
                 }}
                 """
 
-                self._debug_log(f"Tentativo {attempt + 1}/{self.max_retries}")
-                self._debug_log("Prompt inviato", {"issue_text": issue_text, "cap": cap})
-
+                self._debug_log("Invio prompt al modello", {"cap": cap, "issue_text": issue_text})
+                
                 response = self.client.chat.completions.create(
                     messages=[{"role": "user", "content": prompt}],
                     model=self.model,
-                    temperature=0.3,  # Aumentato per dare più tempo di "pensare"
+                    temperature=0.3,
                 )
 
                 response_text = response.choices[0].message.content
@@ -145,25 +169,16 @@ class IssueClassifier:
 
                 json_response = self._extract_json_from_text(response_text)
                 if json_response:
-                    self._debug_log("JSON estratto con regex", json_response)
+                    self._debug_log("JSON estratto", json_response)
+                    if self._validate_response(json_response):
+                        formatted_response = self._format_response(json_response)
+                        self._debug_log("Risposta finale formattata", formatted_response)
+                        return formatted_response
+                    else:
+                        self._debug_log("Validazione fallita - campi mancanti", json_response)
                 else:
-                    self._debug_log("Tentativo di estrazione JSON con regex fallito, provo parsing diretto")
-                    try:
-                        json_response = json.loads(response_text)
-                        self._debug_log("JSON estratto con parsing diretto", json_response)
-                    except json.JSONDecodeError as e:
-                        self._debug_log(f"Errore nel parsing JSON: {str(e)}")
-                        if attempt == self.max_retries - 1:
-                            self._debug_log("Tutti i tentativi falliti, ritorno risposta di default")
-                            return self._format_response({})
-                        continue
+                    self._debug_log("Estrazione JSON fallita")
 
-                if self._validate_response(json_response):
-                    formatted_response = self._format_response(json_response)
-                    self._debug_log("Risposta validata e formattata con successo", formatted_response)
-                    return formatted_response
-                
-                self._debug_log("Validazione risposta fallita")
                 if attempt == self.max_retries - 1:
                     self._debug_log("Tutti i tentativi falliti, ritorno risposta di default")
                     return self._format_response({})
@@ -171,7 +186,6 @@ class IssueClassifier:
             except Exception as e:
                 self._debug_log(f"Errore durante l'esecuzione: {str(e)}")
                 if attempt == self.max_retries - 1:
-                    self._debug_log("Tutti i tentativi falliti per errore, ritorno risposta di default")
                     return self._format_response({})
                 continue
 
