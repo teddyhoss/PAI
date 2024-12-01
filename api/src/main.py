@@ -15,6 +15,10 @@ from sqlalchemy.types import String
 from groq import Groq
 from toolhouse import Toolhouse
 import os
+from dotenv import load_dotenv
+
+# Carica le variabili d'ambiente
+load_dotenv()
 
 # Configurazione logging
 logging.basicConfig(level=logging.INFO)
@@ -49,9 +53,9 @@ class IssueResponse(BaseModel):
 # Inizializza il classifier
 classifier = None
 
-# Inizializzazione di Groq e Toolhouse
-groq_client = Groq(api_key=os.environ.get('GROQ_API_KEY'))
-th = Toolhouse(api_key=os.environ.get('TOOLHOUSE_KEY'))
+# Inizializzazione di Groq e Toolhouse con le chiavi dall'env
+groq_client = Groq(api_key=os.getenv('GROQ_API_KEY'))
+th = Toolhouse(api_key=os.getenv('TOOLHOUSE_KEY', 'th-tmKDVLNhiv0uXzH5CKMDZaZTqi57fWexf61FD9KaD14'))
 MODEL = "llama3-groq-70b-8192-tool-use-preview"
 
 @app.get("/api/stats")
