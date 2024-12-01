@@ -4,30 +4,46 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, GeoJSON, Marker, Popup } from "react-leaflet";
 
-type City = {
-  name: string;
-  population: number;
-  position: Array<number>;
+type Issue = {
+  id: number;
+  text: string;
+  cap: string;
+  category: string;
+  urgency: string;
+  explanation: string;
+  city: string | null;
+  coordinates: number[] | null;
+  timestamp: string;
+};
+
+type StatsResponse = {
+  total: number;
+  high_urgency_count: number;
+  top_category: string;
+  top_zone: string;
+  categories_distribution: { [key: string]: number };
+  zones_distribution: { [key: string]: number };
+  recent_issues: Issue[];
 };
 
 export function AreaDistribution() {
   const [geoData, setGeoData] = useState(null);
-  const [cityPoints, setCityPoints] = useState<Array<City>>([]);
+  const [issues, setIssues] = useState<Issue[]>([]);
 
   useEffect(() => {
+    // Carica il GeoJSON dell'Italia
     fetch("/ITA.geo.json")
       .then((res) => res.json())
       .then((data) => {
         setGeoData(data);
       });
 
-    const cities = [
-      { name: "Bologna", population: 200, position: [44.4949, 11.3426] },
-      { name: "Roma", population: 3000000, position: [41.9028, 12.4964] },
-      { name: "Milano", population: 1500000, position: [45.4642, 9.19] },
-    ];
-
-    setCityPoints(cities);
+    // Carica i dati delle segnalazioni
+    fetch("http://localhost:8000/api/stats")
+      .then((res) => res.json())
+      .then((data: StatsResponse) => {
+        setIssues(data.recent_issues.filter(issue => issue.coordinates !== null));
+      });
   }, []);
 
   const getStyle = () => {
@@ -40,12 +56,18 @@ export function AreaDistribution() {
     };
   };
 
-  const redIcon = new L.DivIcon({
-    className: "custom-icon",
-    html: '<div style="width: 20px; height: 20px; background-color: red; border-radius: 50%; border: 2px solid black;"></div>',
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
-  });
+  // Icone diverse per livelli di urgenza
+  const getIcon = (urgency: string) => {
+    const color = urgency === 'high' ? 'red' : 
+                 urgency === 'medium' ? 'orange' : 'green';
+    
+    return new L.DivIcon({
+      className: "custom-icon",
+      html: `<div style="width: 20px; height: 20px; background-color: ${color}; border-radius: 50%; border: 2px solid black;"></div>`,
+      iconSize: [20, 20],
+      iconAnchor: [10, 10],
+    });
+  };
 
   return (
     <MapContainer
@@ -56,17 +78,29 @@ export function AreaDistribution() {
 
       {geoData && <GeoJSON data={geoData} style={getStyle} />}
 
-      {cityPoints.map((city, index) => (
-        <Marker
-          position={city.position as L.LatLngExpression}
-          key={index}
-          icon={redIcon}>
-          <Popup>
-            <b>{city.name}</b>
-            <br />
-            Población: {city.population}
-          </Popup>
-        </Marker>
+      {issues.map((issue) => (
+        issue.coordinates && (
+          <Marker
+            position={issue.coordinates as L.LatLngExpression}
+            key={issue.id}
+            icon={getIcon(issue.urgency)}>
+            <Popup>
+              <div className="p-2">
+                <h3 className="font-bold">{issue.city}</h3>
+                <p className="text-sm">{issue.text}</p>
+                <div className="mt-2">
+                  <span className="font-semibold">Categoria:</span> {issue.category}
+                </div>
+                <div>
+                  <span className="font-semibold">Urgenza:</span> {issue.urgency}
+                </div>
+                <div className="mt-1 text-xs text-gray-600">
+                  {new Date(issue.timestamp).toLocaleString()}
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        )
       ))}
     </MapContainer>
   );
