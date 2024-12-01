@@ -119,43 +119,57 @@ class IssueClassifier:
             Valuta se questa segnalazione è valida e utile:
             "{issue_text}"
             
-            Rispondi SOLO con un JSON:
+            Una segnalazione è valida se:
+            - È una vera problematica della PA (problemi stradali, illuminazione, rifiuti, etc.)
+            - Non è spam o contenuto offensivo
+            - Non è un test o una prova
+            - Ha un contenuto comprensibile e specifico
+            - Richiede un'azione concreta da parte della PA
+            
+            Rispondi SOLO con un JSON in questo formato:
             {{
                 "is_valid": true/false,
                 "reason": "spiegazione della decisione"
             }}
             
-            Una segnalazione è valida se:
-            - È una vera problematica della PA
-            - Non è spam o contenuto offensivo
-            - Non è un test o una prova
-            - Ha un contenuto comprensibile e specifico
-            - Richiede un'azione concreta
+            IMPORTANTE: Valuta attentamente il contenuto. Se descrive un problema reale della PA, deve essere considerato valido.
             """
 
             validation_response = self.client.chat.completions.create(
                 messages=[
-                    {"role": "system", "content": "Sei un validatore di segnalazioni della PA italiana."},
+                    {"role": "system", "content": "Sei un validatore di segnalazioni della PA italiana. Il tuo compito è identificare segnalazioni valide di problemi che richiedono l'intervento della Pubblica Amministrazione."},
                     {"role": "user", "content": validation_prompt}
                 ],
                 model=self.model,
                 temperature=0.3
             )
 
-            validation_data = self._extract_json_from_text(validation_response.choices[0].message.content)
-            self._debug_log("Risultato validazione:", validation_data)
+            validation_text = validation_response.choices[0].message.content
+            self._debug_log("Risposta validazione completa:", validation_text)
+            
+            validation_data = self._extract_json_from_text(validation_text)
+            self._debug_log("JSON validazione estratto:", validation_data)
 
-            if not validation_data or not validation_data.get('is_valid', False):
-                self._debug_log("Segnalazione non valida:", {
-                    "text": issue_text,
-                    "reason": validation_data.get('reason') if validation_data else "Errore nella validazione"
-                })
+            if not validation_data:
+                self._debug_log("Errore: JSON di validazione non trovato")
                 return {
                     "valid": False,
-                    "reason": validation_data.get('reason', "Segnalazione non valida") if validation_data else "Errore nella validazione"
+                    "original_text": issue_text,
+                    "reason": "Errore nell'analisi della validazione"
                 }
 
-            # Se la segnalazione è valida, procedi con la classificazione normale
+            # Verifica esplicita del campo is_valid
+            is_valid = validation_data.get('is_valid')
+            self._debug_log(f"Is valid: {is_valid}")
+
+            if not is_valid:
+                return {
+                    "valid": False,
+                    "original_text": issue_text,
+                    "reason": validation_data.get('reason', "Segnalazione non valida")
+                }
+
+            # Se arriviamo qui, la segnalazione è valida
             # Step 2: Geolocalizzazione dal CAP
             geo_prompt = f"""Sei un esperto di geografia italiana.
             Per il CAP {cap}, fornisci SOLO un JSON con:
