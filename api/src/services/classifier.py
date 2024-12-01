@@ -82,33 +82,17 @@ class IssueClassifier:
                 logger.debug(message)
 
     def _extract_json_from_text(self, text: str) -> Dict[str, Any]:
-        """Estrae il JSON dalla risposta del modello usando regex."""
+        """Estrae il JSON dalla risposta del modello."""
         try:
-            # Log del testo completo ricevuto
-            self._debug_log("Testo completo ricevuto per estrazione JSON:", text)
-            
-            # Pattern regex migliorato per catturare JSON più complessi
-            json_pattern = r'\{(?:[^{}]|(?R))*\}'
-            json_matches = re.finditer(json_pattern, text, re.DOTALL)
-            
-            for match in json_matches:
-                try:
-                    json_str = match.group(0)
-                    self._debug_log("Tentativo di parsing JSON:", json_str)
-                    json_obj = json.loads(json_str)
-                    
-                    # Verifica che il JSON contenga i campi richiesti
-                    required_fields = ['category', 'urgency', 'explanation', 'city', 'coordinates']
-                    if all(field in json_obj for field in required_fields):
-                        self._debug_log("JSON valido trovato:", json_obj)
-                        return json_obj
-                except json.JSONDecodeError as e:
-                    self._debug_log(f"Errore nel parsing JSON: {str(e)}")
-                    continue
-            
-            self._debug_log("Nessun JSON valido trovato nel testo")
+            self._debug_log("Testo da parsare:", text)
+            # Cerca il primo JSON valido nel testo
+            start = text.find('{')
+            end = text.rfind('}') + 1
+            if start >= 0 and end > start:
+                json_str = text[start:end]
+                self._debug_log("JSON trovato:", json_str)
+                return json.loads(json_str)
             return None
-            
         except Exception as e:
             self._debug_log(f"Errore nell'estrazione JSON: {str(e)}")
             return None
@@ -129,64 +113,73 @@ class IssueClassifier:
         }
 
     def classify_issue(self, issue_text: str, cap: str) -> dict:
-        for attempt in range(self.max_retries):
-            try:
-                categories_list = "\n".join([f"- {k}: {v}" for k, v in self.categories.items()])
-                
-                prompt = f"""Sei un assistente specializzato nell'analisi di problemi della pubblica amministrazione italiana.
-                La tua priorità è determinare con precisione la città e le coordinate geografiche dal CAP fornito.
-                
-                CAP: {cap}
-                
-                1. Prima determina la città corrispondente al CAP
-                2. Trova le coordinate geografiche precise della città
-                3. Poi analizza il seguente problema:
-                {issue_text}
+        try:
+            # Step 1: Geolocalizzazione dal CAP
+            geo_prompt = f"""Sei un esperto di geografia italiana.
+            Per il CAP {cap}, fornisci SOLO un JSON con:
+            {{
+                "city": "nome esatto della città",
+                "coordinates": [latitudine, longitudine]
+            }}
+            IMPORTANTE: Devi essere preciso e accurato."""
 
-                Categorie disponibili:
-                {categories_list}
+            geo_response = self.client.chat.completions.create(
+                messages=[
+                    {"role": "system", "content": "Sei un esperto di geolocalizzazione italiana. Rispondi solo con dati precisi."},
+                    {"role": "user", "content": geo_prompt}
+                ],
+                model=self.model,
+                temperature=0.1
+            )
+            
+            geo_data = self._extract_json_from_text(geo_response.choices[0].message.content)
+            self._debug_log("Dati geografici ottenuti:", geo_data)
 
-                IMPORTANTE: Rispondi SOLO con un JSON valido che DEVE contenere questi campi:
-                {{
-                    "category": "categoria del problema (una tra quelle elencate)",
-                    "urgency": "livello di urgenza (low, medium, high)",
-                    "explanation": "breve spiegazione in italiano della classificazione",
-                    "city": "nome esatto della città",
-                    "coordinates": [latitudine, longitudine]
-                }}
-                """
+            # Step 2: Classificazione del problema
+            categories_list = "\n".join([f"- {k}: {v}" for k, v in self.categories.items()])
+            class_prompt = f"""Analizza questo problema della PA italiana:
+            {issue_text}
 
-                self._debug_log("Invio prompt al modello", {"cap": cap, "issue_text": issue_text})
-                
-                response = self.client.chat.completions.create(
-                    messages=[{"role": "user", "content": prompt}],
-                    model=self.model,
-                    temperature=0.3,
-                )
+            Categorie disponibili:
+            {categories_list}
 
-                response_text = response.choices[0].message.content
-                self._debug_log("Risposta ricevuta dal modello", {"response": response_text})
+            Rispondi SOLO con un JSON:
+            {{
+                "category": "categoria del problema",
+                "urgency": "livello di urgenza (low, medium, high)",
+                "explanation": "breve spiegazione in italiano"
+            }}"""
 
-                json_response = self._extract_json_from_text(response_text)
-                if json_response:
-                    self._debug_log("JSON estratto", json_response)
-                    if self._validate_response(json_response):
-                        formatted_response = self._format_response(json_response)
-                        self._debug_log("Risposta finale formattata", formatted_response)
-                        return formatted_response
-                    else:
-                        self._debug_log("Validazione fallita - campi mancanti", json_response)
-                else:
-                    self._debug_log("Estrazione JSON fallita")
+            class_response = self.client.chat.completions.create(
+                messages=[
+                    {"role": "system", "content": "Sei un esperto di problemi della PA italiana."},
+                    {"role": "user", "content": class_prompt}
+                ],
+                model=self.model,
+                temperature=0.3
+            )
 
-                if attempt == self.max_retries - 1:
-                    self._debug_log("Tutti i tentativi falliti, ritorno risposta di default")
-                    return self._format_response({})
+            class_data = self._extract_json_from_text(class_response.choices[0].message.content)
+            self._debug_log("Dati classificazione ottenuti:", class_data)
 
-            except Exception as e:
-                self._debug_log(f"Errore durante l'esecuzione: {str(e)}")
-                if attempt == self.max_retries - 1:
-                    return self._format_response({})
-                continue
+            # Combina i risultati
+            if geo_data and class_data:
+                final_result = {
+                    "city": geo_data.get("city", "Unknown"),
+                    "coordinates": geo_data.get("coordinates", [0, 0]),
+                    "category": class_data.get("category", "other"),
+                    "urgency": class_data.get("urgency", "medium"),
+                    "explanation": class_data.get("explanation", "Nessuna spiegazione disponibile")
+                }
+                self._debug_log("Risultato finale combinato:", final_result)
+                return final_result
+            else:
+                self._debug_log("Errore: dati mancanti", {
+                    "geo_data": geo_data,
+                    "class_data": class_data
+                })
+                return self._format_response({})
 
-        return self._format_response({})
+        except Exception as e:
+            self._debug_log(f"Errore durante la classificazione: {str(e)}")
+            return self._format_response({})
