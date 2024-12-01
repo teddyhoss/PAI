@@ -9,7 +9,7 @@ import {
 
 export function Circle() {
   return (
-    <div className="fixed bottom-10 right-10">
+    <div className="fixed bottom-10 right-10 z-[99999]">
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
@@ -25,8 +25,8 @@ export function Circle() {
             </Link>
           </TooltipTrigger>
           <TooltipContent>
-            <div className="w-12 text-center">
-              <p>Ciao, sono LLama IA e sto qui per aiutarti</p>
+            <div className="w-24 text-center">
+              <p>Ciao sono LLama IA e sto qui per aiutarti</p>
             </div>
           </TooltipContent>
         </Tooltip>

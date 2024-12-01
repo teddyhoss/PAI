@@ -42,7 +42,9 @@ export function AreaDistribution() {
     fetch("http://localhost:8000/api/stats")
       .then((res) => res.json())
       .then((data: StatsResponse) => {
-        setIssues(data.recent_issues.filter(issue => issue.coordinates !== null));
+        setIssues(
+          data.recent_issues.filter((issue) => issue.coordinates !== null),
+        );
       });
   }, []);
 
@@ -50,7 +52,6 @@ export function AreaDistribution() {
     return {
       weight: 1,
       opacity: 1,
-      color: "black",
       dashArray: "3",
       fillOpacity: 0.7,
     };
@@ -58,9 +59,9 @@ export function AreaDistribution() {
 
   // Icone diverse per livelli di urgenza
   const getIcon = (urgency: string) => {
-    const color = urgency === 'high' ? 'red' : 
-                 urgency === 'medium' ? 'orange' : 'green';
-    
+    const color =
+      urgency === "high" ? "red" : urgency === "medium" ? "orange" : "green";
+
     return new L.DivIcon({
       className: "custom-icon",
       html: `<div style="width: 20px; height: 20px; background-color: ${color}; border-radius: 50%; border: 2px solid black;"></div>`,
@@ -76,32 +77,35 @@ export function AreaDistribution() {
       style={{ width: "100%", height: "100%" }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-      {geoData && <GeoJSON data={geoData} style={getStyle} />}
+      {geoData && <GeoJSON data={geoData} />}
 
-      {issues.map((issue) => (
-        issue.coordinates && (
-          <Marker
-            position={issue.coordinates as L.LatLngExpression}
-            key={issue.id}
-            icon={getIcon(issue.urgency)}>
-            <Popup>
-              <div className="p-2">
-                <h3 className="font-bold">{issue.city}</h3>
-                <p className="text-sm">{issue.text}</p>
-                <div className="mt-2">
-                  <span className="font-semibold">Categoria:</span> {issue.category}
+      {issues.map(
+        (issue) =>
+          issue.coordinates && (
+            <Marker
+              position={issue.coordinates as L.LatLngExpression}
+              key={issue.id}
+              icon={getIcon(issue.urgency)}>
+              <Popup>
+                <div className="p-2">
+                  <h3 className="font-bold">{issue.city}</h3>
+                  <p className="text-sm">{issue.text}</p>
+                  <div className="mt-2">
+                    <span className="font-semibold">Categoria:</span>{" "}
+                    {issue.category}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Urgenza:</span>{" "}
+                    {issue.urgency}
+                  </div>
+                  <div className="mt-1 text-xs text-gray-600">
+                    {new Date(issue.timestamp).toLocaleString()}
+                  </div>
                 </div>
-                <div>
-                  <span className="font-semibold">Urgenza:</span> {issue.urgency}
-                </div>
-                <div className="mt-1 text-xs text-gray-600">
-                  {new Date(issue.timestamp).toLocaleString()}
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        )
-      ))}
+              </Popup>
+            </Marker>
+          ),
+      )}
     </MapContainer>
   );
 }

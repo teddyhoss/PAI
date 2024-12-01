@@ -1,5 +1,8 @@
-import { Circle } from "./circle";
 import { useTranslations } from "next-intl";
+// @components
+import { Circle } from "./circle";
+import { AreaDistribution } from "./area-distribution";
+import { CategoryDistribution } from "./category-distribution";
 
 interface Props {
   totalReports: number;
@@ -36,12 +39,12 @@ export function Dashboard({
           <p className="text-xl text-gray-800">{mostFrequencyCategory}</p>
         </div>
       </div>
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="bg-white shadow-md rounded-lg p-4 h-auto">
           <h2 className="text-gray-600 font-semibold mb-4">
             {t("category_distribution")}
           </h2>
-          <div className="w-full h-80 flex items-center justify-center">
+          <div className="w-full h-[32rem] flex items-center justify-center">
             <CategoryDistribution />
           </div>
         </div>
@@ -49,11 +52,11 @@ export function Dashboard({
           <h2 className="text-gray-600 font-semibold mb-4">
             {t("area_distribution")}
           </h2>
-          <div className="w-full h-80 flex items-center justify-center">
+          <div className="w-full h-[32rem] flex items-center justify-center">
             <AreaDistribution />
           </div>
         </div>
-      </div> */}
+      </div>
       {/* <div className="bg-white shadow-md rounded-lg p-4">
         <h2 className="text-gray-600 font-semibold mb-4">
           {t("latest_reports")}
