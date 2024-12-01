@@ -43,7 +43,9 @@ export default async function DashboardPage() {
           <Circle />
         </DialogTrigger>
         <DialogContent>
-          <DialogTitle>ChatBot</DialogTitle>
+          <DialogTitle className="text-[#2d62c8]">
+            Llama chat - Assistente PA
+          </DialogTitle>
           <div className="min-h-96 max-h-96">
             <ChatBot />
           </div>
