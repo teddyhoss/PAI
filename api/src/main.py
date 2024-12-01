@@ -7,11 +7,24 @@ from pydantic import BaseModel
 from database import models
 from datetime import datetime
 from typing import Optional
-from sqlalchemy import func
+from sqlalchemy import func, text, cast
+from sqlalchemy.types import String
+from fastapi.middleware.cors import CORSMiddleware
 import os
 
 app = FastAPI(title="TellNow")
 classifier = IssueClassifier()
+
+# Configurazione CORS aggiornata
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:5173"],  # Aggiungi qui i domini frontend
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+    expose_headers=["Content-Length"],
+    max_age=600,
+)
 
 # Crea le tabelle nel database
 Base.metadata.create_all(bind=engine)
@@ -76,15 +89,15 @@ def get_stats(db: Session = Depends(get_db)):
         
         # Conteggio per urgenza alta usando sintassi PostgreSQL corretta
         high_urgency_count = db.query(models.Issue)\
-            .filter(models.Issue.classification['urgency'] == "high")\
+            .filter(cast(models.Issue.classification['urgency'], String) == 'high')\
             .count()
         
             
         # Distribuzione per categoria
         categories_query = db.query(
-            models.Issue.classification['category'],
+            cast(models.Issue.classification['category'], String).label('category'),
             func.count('*').label('count')
-        ).group_by(models.Issue.classification['category']).all()
+        ).group_by('category').all()
         
         categories_distribution = {}
         for cat in categories_query:
