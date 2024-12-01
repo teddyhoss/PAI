@@ -16,17 +16,17 @@ DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
 
-# Stringa di connessione con parametri aggiuntivi per la gestione delle disconnessioni
+# Stringa di connessione con parametri aggiuntivi
 SQLALCHEMY_DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-# Configurazione del engine con parametri di connessione ottimizzati
+# Configurazione del engine con parametri ottimizzati
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
-    pool_size=5,  # Numero di connessioni nel pool
-    max_overflow=10,  # Numero massimo di connessioni extra
-    pool_timeout=30,  # Timeout per ottenere una connessione
-    pool_recycle=1800,  # Ricicla connessioni dopo 30 minuti
-    pool_pre_ping=True,  # Verifica la connessione prima dell'uso
+    pool_size=5,
+    max_overflow=10,
+    pool_timeout=30,
+    pool_recycle=1800,
+    pool_pre_ping=True,
     connect_args={
         "keepalives": 1,
         "keepalives_idle": 30,
@@ -38,11 +38,11 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-@contextmanager
 def get_db():
+    """Funzione per ottenere una sessione del database"""
     db = SessionLocal()
     try:
-        yield db
+        return db
     except Exception as e:
         db.rollback()
         raise
@@ -61,3 +61,5 @@ def get_db_with_retry(max_retries=3, delay=1):
                 raise
             time.sleep(delay)
             continue
+        finally:
+            db.close()
