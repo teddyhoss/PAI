@@ -6,7 +6,8 @@ import {
 } from "@/components/ui/card";
 import { notFound } from "next/navigation";
 import { ToDashboard } from "./components/to-dashboard";
-import { useTranslations } from "next-intl";
+
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   searchParams: Promise<{
@@ -27,7 +28,7 @@ const getStats = async () => {
 };
 
 export default async function ReportPage({ searchParams }: Readonly<Props>) {
-  const t = useTranslations("report");
+  const t = await getTranslations("report");
 
   try {
     const { id } = await searchParams;
