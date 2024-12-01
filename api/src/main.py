@@ -12,6 +12,9 @@ import logging
 import uvicorn
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.types import String
+from groq import Groq
+from toolhouse import Toolhouse
+import os
 
 # Configurazione logging
 logging.basicConfig(level=logging.INFO)
@@ -45,6 +48,11 @@ class IssueResponse(BaseModel):
 
 # Inizializza il classifier
 classifier = None
+
+# Inizializzazione di Groq e Toolhouse
+groq_client = Groq(api_key=os.environ.get('GROQ_API_KEY'))
+th = Toolhouse(api_key=os.environ.get('TOOLHOUSE_KEY'))
+MODEL = "llama3-groq-70b-8192-tool-use-preview"
 
 @app.get("/api/stats")
 async def get_stats(db: Session = Depends(get_db)):
@@ -169,6 +177,34 @@ async def classify_issue(issue: Issue, db: Session = Depends(get_db)):
             status_code=500,
             content={"error": str(e)}
         )
+
+@app.post("/api/chat")
+async def chat(request: dict):
+    try:
+        # Crea la risposta usando Groq
+        response = groq_client.chat.completions.create(
+            model=MODEL,
+            messages=request['messages'],
+            tools=th.get_tools(),
+        )
+
+        # Esegui gli strumenti se necessario
+        tool_run = th.run_tools(response)
+        if tool_run:
+            request['messages'].extend(tool_run)
+            # Ottieni la risposta finale
+            response = groq_client.chat.completions.create(
+                model=MODEL,
+                messages=request['messages'],
+                tools=th.get_tools(),
+            )
+
+        return {
+            "response": response.choices[0].message.content
+        }
+    except Exception as e:
+        logger.error(f"Errore nella chat: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     try:
