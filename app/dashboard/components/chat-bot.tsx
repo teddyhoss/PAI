@@ -85,8 +85,31 @@ export function ChatBot() {
                     messages: [
                         {
                             role: 'system',
-                            content: `Sei un assistente della PA italiana che aiuta a interpretare le statistiche delle segnalazioni. 
-                            Usa queste informazioni per rispondere alle domande: ${contextMessage}`
+                            content: `Sei un assistente della PA italiana che aiuta a interpretare le statistiche delle segnalazioni.
+                            Puoi anche inviare email quando richiesto dall'utente.
+                            
+                            Contesto attuale del sistema:
+                            - Totale segnalazioni: ${statsData.total}
+                            - Segnalazioni ad alta urgenza: ${statsData.high_urgency_count}
+                            - Categoria più frequente: ${statsData.top_category}
+                            - Zona più attiva: ${statsData.top_zone}
+                            
+                            Distribuzione categorie:
+                            ${Object.entries(statsData.categories_distribution)
+                                .map(([cat, count]) => `- ${cat}: ${count} segnalazioni`)
+                                .join('\n')}
+                            
+                            Distribuzione zone:
+                            ${Object.entries(statsData.zones_distribution)
+                                .map(([zone, count]) => `- ${zone}: ${count} segnalazioni`)
+                                .join('\n')}
+                            
+                            Ultime segnalazioni:
+                            ${statsData.recent_issues
+                                .map(issue => `- ${issue.text} (${issue.category}, ${issue.urgency})`)
+                                .join('\n')}
+                            
+                            Se l'utente chiede di inviare un'email, usa lo strumento email per farlo.`
                         },
                         {
                             role: 'user',

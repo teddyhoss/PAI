@@ -185,29 +185,53 @@ async def classify_issue(issue: Issue, db: Session = Depends(get_db)):
 @app.post("/api/chat")
 async def chat(request: dict):
     try:
-        # Crea la risposta usando Groq
+        # Prepara il messaggio di sistema con il contesto
+        messages = request['messages']
+        
+        # Prima chiamata per ottenere la risposta iniziale
         response = groq_client.chat.completions.create(
             model=MODEL,
-            messages=request['messages'],
+            messages=messages,
             tools=th.get_tools(),
+            temperature=0.3,  # Aggiungiamo temperatura più bassa per risposte più precise
         )
+
+        # Estrai la risposta iniziale
+        assistant_message = response.choices[0].message
+        
+        # Aggiungi la risposta dell'assistente ai messaggi
+        messages.append({
+            "role": "assistant",
+            "content": assistant_message.content,
+            "tool_calls": assistant_message.tool_calls if hasattr(assistant_message, 'tool_calls') else None
+        })
 
         # Esegui gli strumenti se necessario
         tool_run = th.run_tools(response)
         if tool_run:
-            request['messages'].extend(tool_run)
-            # Ottieni la risposta finale
-            response = groq_client.chat.completions.create(
+            # Aggiungi i risultati degli strumenti ai messaggi
+            messages.extend(tool_run)
+            
+            # Ottieni la risposta finale dopo l'esecuzione degli strumenti
+            final_response = groq_client.chat.completions.create(
                 model=MODEL,
-                messages=request['messages'],
+                messages=messages,
                 tools=th.get_tools(),
+                temperature=0.3,
             )
+            
+            # Usa la risposta finale
+            final_content = final_response.choices[0].message.content
+            logger.info(f"Risposta finale dopo tool execution: {final_content}")
+            return {"response": final_content}
+        
+        # Se non ci sono tool da eseguire, usa la risposta iniziale
+        logger.info(f"Risposta senza tool execution: {assistant_message.content}")
+        return {"response": assistant_message.content}
 
-        return {
-            "response": response.choices[0].message.content
-        }
     except Exception as e:
         logger.error(f"Errore nella chat: {str(e)}")
+        logger.exception("Traceback completo:")
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
