@@ -7,7 +7,9 @@ export default function HomePage() {
 
   return (
     <>
-      <div className="text-center space-y-8" id="main-container-home-page">
+      <div
+        className="text-center space-y-8 mt-[-60px]"
+        id="main-container-home-page">
         <h2 className="text-6xl md:text-8xl">{t("welcome")}</h2>
         <p className="text-2xl md:text-3xl">
           {t("paragraphs.first.before_main_word")}{" "}

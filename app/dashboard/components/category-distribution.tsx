@@ -27,6 +27,7 @@ type StatsResponse = {
   top_zone: string;
   categories_distribution: { [key: string]: number };
   zones_distribution: { [key: string]: number };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   recent_issues: any[];
 };
 
@@ -77,13 +78,12 @@ export function CategoryDistribution() {
       {
         label: "Distribuzione Categorie",
         data: Object.values(cleanCategories),
-        backgroundColor: "rgba(255, 99, 132, 0.2)",
-        borderColor: "rgba(255, 99, 132, 1)",
+        backgroundColor: "rgba(45, 98, 200, 0.5)",
+        borderColor: "#2d62c8",
         borderWidth: 2,
-        pointBackgroundColor: "rgba(255, 99, 132, 1)",
+        pointBackgroundColor: "rgba(45, 98, 200, 0.9)",
         pointBorderColor: "#fff",
         pointHoverBackgroundColor: "#fff",
-        pointHoverBorderColor: "rgba(255, 99, 132, 1)",
       },
     ],
   };
@@ -98,6 +98,7 @@ export function CategoryDistribution() {
       tooltip: {
         enabled: true,
         callbacks: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           label: (context: any) => {
             return `Segnalazioni: ${context.raw}`;
           },
