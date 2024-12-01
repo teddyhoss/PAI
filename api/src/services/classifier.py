@@ -61,15 +61,17 @@ class IssueClassifier:
             "other": "Altri problemi non categorizzati"
         }
         
+        # Configurazione logger migliorata
         if self.debug:
             os.makedirs('logs', exist_ok=True)
-            fh = logging.FileHandler(f'logs/classifier_{datetime.now().strftime("%Y%m%d")}.log')
+            log_file = f'logs/classifier_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
+            fh = logging.FileHandler(log_file)
             fh.setLevel(logging.DEBUG)
             formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
             fh.setFormatter(formatter)
             logger.addHandler(fh)
             logger.setLevel(logging.DEBUG)
-            logger.debug("Modalità debug attivata per il classifier")
+            logger.debug(f"Inizializzazione classifier - Log file: {log_file}")
 
     def _debug_log(self, message: str, data: Any = None):
         """Funzione helper per logging in modalità debug"""
@@ -80,18 +82,24 @@ class IssueClassifier:
                 logger.debug(message)
 
     def _extract_json_from_text(self, text: str) -> Dict[str, Any]:
-        """Estrae il JSON dalla risposta del modello usando regex."""
+        """Estrae il JSON dalla risposta del modello."""
         try:
-            json_match = re.search(r'\{[^{}]*\}', text)
-            if json_match:
-                return json.loads(json_match.group(0))
+            self._debug_log("Testo da parsare:", text)
+            # Cerca il primo JSON valido nel testo
+            start = text.find('{')
+            end = text.rfind('}') + 1
+            if start >= 0 and end > start:
+                json_str = text[start:end]
+                self._debug_log("JSON trovato:", json_str)
+                return json.loads(json_str)
             return None
-        except json.JSONDecodeError:
+        except Exception as e:
+            self._debug_log(f"Errore nell'estrazione JSON: {str(e)}")
             return None
 
     def _validate_response(self, response: Dict[str, Any]) -> bool:
         """Verifica che la risposta contenga tutti i campi necessari."""
-        required_fields = ['category', 'urgency', 'explanation']
+        required_fields = ['category', 'urgency', 'explanation', 'city', 'coordinates']
         return all(field in response for field in required_fields)
 
     def _format_response(self, response: Dict[str, Any]) -> Dict[str, Any]:
@@ -99,73 +107,79 @@ class IssueClassifier:
         return {
             'category': str(response.get('category', 'other')),
             'urgency': str(response.get('urgency', 'medium')).lower(),
-            'explanation': str(response.get('explanation', 'Nessuna spiegazione disponibile'))
+            'explanation': str(response.get('explanation', 'Nessuna spiegazione disponibile')),
+            'city': str(response.get('city', 'Unknown')),
+            'coordinates': response.get('coordinates', [0, 0])
         }
 
     def classify_issue(self, issue_text: str, cap: str) -> dict:
-        for attempt in range(self.max_retries):
-            try:
-                categories_list = "\n".join([f"- {k}: {v}" for k, v in self.categories.items()])
-                
-                prompt = f"""Analizza attentamente il seguente problema della pubblica amministrazione italiana.
-                Prendi il tempo necessario per una valutazione accurata.
-                
-                CAP: {cap}
-                Problema: {issue_text}
+        try:
+            # Step 1: Geolocalizzazione dal CAP
+            geo_prompt = f"""Sei un esperto di geografia italiana.
+            Per il CAP {cap}, fornisci SOLO un JSON con:
+            {{
+                "city": "nome esatto della città",
+                "coordinates": [latitudine, longitudine]
+            }}
+            IMPORTANTE: Devi essere preciso e accurato."""
 
-                Categorie disponibili:
-                {categories_list}
+            geo_response = self.client.chat.completions.create(
+                messages=[
+                    {"role": "system", "content": "Sei un esperto di geolocalizzazione italiana. Rispondi solo con dati precisi."},
+                    {"role": "user", "content": geo_prompt}
+                ],
+                model=self.model,
+                temperature=0.1
+            )
+            
+            geo_data = self._extract_json_from_text(geo_response.choices[0].message.content)
+            self._debug_log("Dati geografici ottenuti:", geo_data)
 
-                Rispondi SOLO con un JSON valido che contiene:
-                {{
-                    "category": "categoria del problema (una tra quelle elencate)",
-                    "urgency": "livello di urgenza (low, medium, high)",
-                    "explanation": "breve spiegazione in italiano della classificazione"
-                }}
-                """
+            # Step 2: Classificazione del problema
+            categories_list = "\n".join([f"- {k}: {v}" for k, v in self.categories.items()])
+            class_prompt = f"""Analizza questo problema della PA italiana:
+            {issue_text}
 
-                self._debug_log(f"Tentativo {attempt + 1}/{self.max_retries}")
-                self._debug_log("Prompt inviato", {"issue_text": issue_text, "cap": cap})
+            Categorie disponibili:
+            {categories_list}
 
-                response = self.client.chat.completions.create(
-                    messages=[{"role": "user", "content": prompt}],
-                    model=self.model,
-                    temperature=0.3,  # Aumentato per dare più tempo di "pensare"
-                )
+            Rispondi SOLO con un JSON:
+            {{
+                "category": "categoria del problema",
+                "urgency": "livello di urgenza (low, medium, high)",
+                "explanation": "breve spiegazione in italiano"
+            }}"""
 
-                response_text = response.choices[0].message.content
-                self._debug_log("Risposta ricevuta dal modello", {"response": response_text})
+            class_response = self.client.chat.completions.create(
+                messages=[
+                    {"role": "system", "content": "Sei un esperto di problemi della PA italiana."},
+                    {"role": "user", "content": class_prompt}
+                ],
+                model=self.model,
+                temperature=0.3
+            )
 
-                json_response = self._extract_json_from_text(response_text)
-                if json_response:
-                    self._debug_log("JSON estratto con regex", json_response)
-                else:
-                    self._debug_log("Tentativo di estrazione JSON con regex fallito, provo parsing diretto")
-                    try:
-                        json_response = json.loads(response_text)
-                        self._debug_log("JSON estratto con parsing diretto", json_response)
-                    except json.JSONDecodeError as e:
-                        self._debug_log(f"Errore nel parsing JSON: {str(e)}")
-                        if attempt == self.max_retries - 1:
-                            self._debug_log("Tutti i tentativi falliti, ritorno risposta di default")
-                            return self._format_response({})
-                        continue
+            class_data = self._extract_json_from_text(class_response.choices[0].message.content)
+            self._debug_log("Dati classificazione ottenuti:", class_data)
 
-                if self._validate_response(json_response):
-                    formatted_response = self._format_response(json_response)
-                    self._debug_log("Risposta validata e formattata con successo", formatted_response)
-                    return formatted_response
-                
-                self._debug_log("Validazione risposta fallita")
-                if attempt == self.max_retries - 1:
-                    self._debug_log("Tutti i tentativi falliti, ritorno risposta di default")
-                    return self._format_response({})
+            # Combina i risultati
+            if geo_data and class_data:
+                final_result = {
+                    "city": geo_data.get("city", "Unknown"),
+                    "coordinates": geo_data.get("coordinates", [0, 0]),
+                    "category": class_data.get("category", "other"),
+                    "urgency": class_data.get("urgency", "medium"),
+                    "explanation": class_data.get("explanation", "Nessuna spiegazione disponibile")
+                }
+                self._debug_log("Risultato finale combinato:", final_result)
+                return final_result
+            else:
+                self._debug_log("Errore: dati mancanti", {
+                    "geo_data": geo_data,
+                    "class_data": class_data
+                })
+                return self._format_response({})
 
-            except Exception as e:
-                self._debug_log(f"Errore durante l'esecuzione: {str(e)}")
-                if attempt == self.max_retries - 1:
-                    self._debug_log("Tutti i tentativi falliti per errore, ritorno risposta di default")
-                    return self._format_response({})
-                continue
-
-        return self._format_response({})
+        except Exception as e:
+            self._debug_log(f"Errore durante la classificazione: {str(e)}")
+            return self._format_response({})
