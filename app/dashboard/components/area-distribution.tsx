@@ -31,21 +31,23 @@ export function AreaDistribution() {
   const [issues, setIssues] = useState<Issue[]>([]);
 
   useEffect(() => {
-    // Carica il GeoJSON dell'Italia
-    fetch("/ITA.geo.json")
-      .then((res) => res.json())
-      .then((data) => {
-        setGeoData(data);
-      });
+    const getData = async () => {
+      fetch("/ITA.geo.json")
+        .then((res) => res.json())
+        .then((data) => {
+          setGeoData(data);
+        });
 
-    // Carica i dati delle segnalazioni
-    fetch("http://localhost:8000/api/stats")
-      .then((res) => res.json())
-      .then((data: StatsResponse) => {
-        setIssues(
-          data.recent_issues.filter((issue) => issue.coordinates !== null),
-        );
-      });
+      fetch("http://localhost:8000/api/stats")
+        .then((res) => res.json())
+        .then((data: StatsResponse) => {
+          setIssues(
+            data.recent_issues.filter((issue) => issue.coordinates !== null),
+          );
+        });
+    };
+
+    getData();
   }, []);
 
   const getStyle = () => {
@@ -57,7 +59,6 @@ export function AreaDistribution() {
     };
   };
 
-  // Icone diverse per livelli di urgenza
   const getIcon = (urgency: string) => {
     const color =
       urgency === "high" ? "red" : urgency === "medium" ? "orange" : "green";

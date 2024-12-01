@@ -24,6 +24,7 @@ export default async function DashboardPage() {
       mostFrequencyCategory={stats.top_category
         .toUpperCase()
         .replaceAll('"', "")}
+      data={stats.recent_issues}
     />
   );
 }
