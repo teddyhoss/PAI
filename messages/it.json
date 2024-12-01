@@ -48,5 +48,12 @@
     "table": {
       "placeholder_input": "Ricerca una segnalazione"
     }
+  },
+  "report": {
+    "number": "Numero ID",
+    "urgency": "Urgenza",
+    "category": "Categoria",
+    "summary": "Riassunto",
+    "issue": "Segnalazione"
   }
 }

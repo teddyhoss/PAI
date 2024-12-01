@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/card";
 import { notFound } from "next/navigation";
 import { ToDashboard } from "./components/to-dashboard";
+import { useTranslations } from "next-intl";
 
 interface Props {
   searchParams: Promise<{
@@ -26,6 +27,8 @@ const getStats = async () => {
 };
 
 export default async function ReportPage({ searchParams }: Readonly<Props>) {
+  const t = useTranslations("report");
+
   try {
     const { id } = await searchParams;
     const stats = await getStats();
@@ -44,13 +47,15 @@ export default async function ReportPage({ searchParams }: Readonly<Props>) {
             </div>
             <div className="flex flex-grow gap-4 justify-evenly">
               <p>
-                <span className="text-[#2d62c8]">Numero ID:</span> {issue.id}
+                <span className="text-[#2d62c8]">{t("number")}:</span>{" "}
+                {issue.id}
               </p>
               <p>
-                <span className="text-[#2d62c8]">Urgenza:</span> {issue.urgency}
+                <span className="text-[#2d62c8]">{t("urgency")}:</span>{" "}
+                {issue.urgency}
               </p>
               <p>
-                <span className="text-[#2d62c8]">Categoria:</span>{" "}
+                <span className="text-[#2d62c8]">{t("category")}:</span>{" "}
                 {issue.category}
               </p>
             </div>
@@ -60,7 +65,9 @@ export default async function ReportPage({ searchParams }: Readonly<Props>) {
           <br />
           <CardContent>
             <div>
-              <h2 className="text-2xl text-[#2d62c8] font-bold">Riassunto:</h2>
+              <h2 className="text-2xl text-[#2d62c8] font-bold">
+                {t("summary")}:
+              </h2>
               <p className="text-xl">{issue.explanation}</p>
               <br />
             </div>
@@ -68,7 +75,7 @@ export default async function ReportPage({ searchParams }: Readonly<Props>) {
             <br />
             <div>
               <h2 className="text-2xl text-[#2d62c8] font-bold">
-                Segnalazione:
+                {t("issue")}:
               </h2>
               <p className="text-xl">{issue.text}</p>
             </div>

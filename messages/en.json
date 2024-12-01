@@ -48,5 +48,12 @@
     "table": {
       "placeholder_input": "Search a report"
     }
+  },
+  "report": {
+    "number": "ID Number",
+    "urgency": "Urgency",
+    "category": "Category",
+    "summary": "Summary",
+    "issue": "Report"
   }
 }
