@@ -67,3 +67,6 @@ coverage.xml
 # Project specific
 src/static/images/*
 !src/static/images/.gitkeep
+
+/.next
+/node_modules

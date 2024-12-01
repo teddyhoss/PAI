@@ -42,7 +42,9 @@ export function ChangeLanguageButton({ select_language }: Readonly<Props>) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="secondary" className="w-auto md:w-44 outline-none">
+        <Button
+          variant="secondary"
+          className="w-auto md:w-44 outline-none bg-[#2d62c8] text-white hover:text-black rounded-3xl">
           <p className="hidden md:block">{select_language.main}</p>
           <AlignJustifyIcon
             className="block md:hidden"
@@ -50,7 +52,7 @@ export function ChangeLanguageButton({ select_language }: Readonly<Props>) {
           />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-auto md:w-44">
+      <DropdownMenuContent className="w-auto md:w-44 space-y-4">
         <DropdownMenuItem
           className="cursor-pointer flex justify-between"
           onClick={setItalianLanguage}>

@@ -26,9 +26,15 @@
     },
     "form": {
       "placeholder_input_message": "Scrivi un nuovo messaggio qui...",
-      "placeholder_input_cap": "Scrivi il tuo cap qui...",
+      "placeholder_input_cap": "Scrivi il tuo CAP qui...",
+      "error_required_cap": "Inserisci un CAP valido",
       "error_required_input": "Questo campo è richiesto",
       "button_submit": "Invia formulario"
+    },
+    "thank_you_for_your_feedback": {
+      "thank_you": "Grazie per la tua segnalazione",
+      "phrase": "Il tuo impegno conta!",
+      "button_submit": "Invia un'altra segnalazione"
     }
   },
   "dashboard": {

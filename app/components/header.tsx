@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 // @components
-import { ToDashboard } from "./to-dashboard";
 import { ChangeLanguageButton } from "./change-language-button";
 
 export function Header() {
@@ -20,7 +19,6 @@ export function Header() {
         </div>
       </Link>
       <div className="space-x-5">
-        <ToDashboard />
         <ChangeLanguageButton
           select_language={{
             main: t("select-language.main"),
