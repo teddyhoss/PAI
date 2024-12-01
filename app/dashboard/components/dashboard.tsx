@@ -26,34 +26,34 @@ export function Dashboard({
   return (
     <div className="w-screen px-8 md:px-28 relative">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white shadow-md rounded-lg p-4">
-          <h2 className="text-gray-600 font-semibold">{t("reports")}</h2>
+        <div className="bg-white shadow-md rounded-3xl p-4">
+          <h2 className="text-[#2d62c8] font-semibold">{t("reports")}</h2>
           <p className="text-xl text-gray-800">{totalReports}</p>
         </div>
-        <div className="bg-white shadow-md rounded-lg p-4">
-          <h2 className="text-gray-600 font-semibold">{t("urgency")}</h2>
+        <div className="bg-white shadow-md rounded-3xl p-4">
+          <h2 className="text-[#2d62c8] font-semibold">{t("urgency")}</h2>
           <p className="text-xl text-gray-800">{highUrgency}</p>
         </div>
-        <div className="bg-white shadow-md rounded-lg p-4">
-          <h2 className="text-gray-600 font-semibold">{t("zone")}</h2>
+        <div className="bg-white shadow-md rounded-3xl p-4">
+          <h2 className="text-[#2d62c8] font-semibold">{t("zone")}</h2>
           <p className="text-xl text-gray-800">{mostReportedAreas}</p>
         </div>
-        <div className="bg-white shadow-md rounded-lg p-4">
-          <h2 className="text-gray-600 font-semibold">{t("category")}</h2>
+        <div className="bg-white shadow-md rounded-3xl p-4">
+          <h2 className="text-[#2d62c8] font-semibold">{t("category")}</h2>
           <p className="text-xl text-gray-800">{mostFrequencyCategory}</p>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div className="bg-white shadow-md rounded-lg p-4 h-auto">
-          <h2 className="text-gray-600 font-semibold mb-4">
+        <div className="bg-white shadow-md rounded-3xl p-4 h-auto">
+          <h2 className="text-[#2d62c8] font-semibold mb-4">
             {t("category_distribution")}
           </h2>
           <div className="w-full h-[32rem] flex items-center justify-center">
             <CategoryDistribution />
           </div>
         </div>
-        <div className="bg-white shadow-md rounded-lg p-4 h-auto">
-          <h2 className="text-gray-600 font-semibold mb-4">
+        <div className="bg-white shadow-md rounded-3xl p-4 h-auto">
+          <h2 className="text-[#2d62c8] font-semibold mb-4">
             {t("area_distribution")}
           </h2>
           <div className="w-full h-[32rem] flex items-center justify-center">
@@ -61,8 +61,8 @@ export function Dashboard({
           </div>
         </div>
       </div>
-      <div className="bg-white shadow-md rounded-lg p-4">
-        <h2 className="text-gray-600 font-semibold mb-4">
+      <div className="bg-white shadow-md rounded-3xl p-4">
+        <h2 className="text-[#2d62c8] font-semibold mb-4">
           {t("latest_reports")}
         </h2>
         <div className="w-full">
@@ -73,8 +73,6 @@ export function Dashboard({
           />
         </div>
       </div>
-      <br />
-      <Circle />
     </div>
   );
 }

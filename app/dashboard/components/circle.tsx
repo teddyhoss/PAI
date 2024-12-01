@@ -1,4 +1,3 @@
-import Link from "next/link";
 // @components
 import {
   Tooltip,
@@ -13,16 +12,14 @@ export function Circle() {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
-            <Link href="/chatbot" replace>
-              <div className="w-20 h-20 rounded-full bg-black flex items-center justify-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="https://developer-blogs.nvidia.com/wp-content/uploads/2024/08/llama-sunglasses-meadow.jpg"
-                  alt="llama"
-                  className="w-16 h-16 object-cover rounded-full"
-                />
-              </div>
-            </Link>
+            <div className="w-20 h-20 rounded-full bg-black flex items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://developer-blogs.nvidia.com/wp-content/uploads/2024/08/llama-sunglasses-meadow.jpg"
+                alt="llama"
+                className="w-16 h-16 object-cover rounded-full"
+              />
+            </div>
           </TooltipTrigger>
           <TooltipContent>
             <div className="w-24 text-center">
