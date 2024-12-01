@@ -7,7 +7,7 @@
     "run-api": "python ./api/src/main.py",
     "dev": "concurrently \"pnpm run-app\" \"pnpm run-api\"",
     "build": "next build",
-    "start": "next start",
+    "start": "concurrently \"next start\" \"python ./api/src/main.py\"",
     "lint": "next lint"
   },
   "dependencies": {
