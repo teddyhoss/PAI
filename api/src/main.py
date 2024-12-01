@@ -53,6 +53,14 @@ class IssueResponse(BaseModel):
     cap: str
     classification: dict
     timestamp: datetime
+    
+    @property
+    def city(self) -> str:
+        return self.classification.get('city', 'Unknown')
+    
+    @property
+    def coordinates(self) -> list:
+        return self.classification.get('coordinates', [0, 0])
 
 @app.post("/api/classify/", response_model=IssueResponse)
 def classify_issue(issue: Issue, db: Session = Depends(get_db)):
@@ -138,6 +146,8 @@ def get_stats(db: Session = Depends(get_db)):
                 "category": issue.classification.get("category"),
                 "urgency": issue.classification.get("urgency"),
                 "explanation": issue.classification.get("explanation"),
+                "city": issue.classification.get("city"),
+                "coordinates": issue.classification.get("coordinates"),
                 "timestamp": issue.timestamp
             } for issue in recent_issues]
         }
